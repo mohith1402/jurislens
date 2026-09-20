@@ -98,8 +98,17 @@ class DocumentParser:
                     # Flush previous clause
                     flush_clause(idx - 1)
                     current_number = m.group(1).strip()
-                    extracted_title = m.group(2).strip() if len(m.groups()) >= 2 else ""
-                    current_title = extracted_title if extracted_title else f"Clause {current_number}"
+                    raw_title = m.group(2).strip() if len(m.groups()) >= 2 else ""
+                    if raw_title:
+                        first_phrase = raw_title.split(".")[0].strip()
+                        if len(first_phrase) >= 3 and len(first_phrase) <= 50:
+                            current_title = first_phrase
+                        elif len(raw_title) > 50:
+                            current_title = raw_title[:47] + "..."
+                        else:
+                            current_title = raw_title
+                    else:
+                        current_title = f"Clause {current_number}"
                     clause_start_line = idx
                     current_lines.append(stripped)
                     matched = True
