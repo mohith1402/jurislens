@@ -1,0 +1,25 @@
+MUTUAL NON-DISCLOSURE AGREEMENT (STANDARD)
+
+This Mutual Non-Disclosure Agreement (the "Agreement") is entered into as of January 15, 2024, by and between Alpha Corp ("Party A") and Beta Labs ("Party B").
+
+1. PURPOSE
+The parties wish to explore a potential business relationship relating to software collaboration (the "Purpose").
+
+2. CONFIDENTIAL INFORMATION
+2.1 Scope. Confidential Information includes all technical, business, and financial data disclosed by either party to the other that is designated as confidential or reasonably understood to be confidential.
+2.2 Exclusions. Confidential Information does not include information that: (a) is or becomes publicly known through no breach; (b) was already known to the recipient prior to disclosure; (c) is independently developed without reference to the disclosure; or (d) is required to be disclosed by law with prompt notice.
+
+3. OBLIGATIONS OF RECIPIENT
+3.1 Duty of Care. Each party agrees to protect the other party's Confidential Information with the same degree of care it uses for its own sensitive data, but not less than reasonable care.
+3.2 Permitted Disclosures. Information may only be shared with employees or advisors who have a need to know and are bound by confidentiality terms at least as restrictive as this Agreement.
+
+4. TERM AND TERMINATION
+4.1 Term. This Agreement shall remain in effect for two (2) years from the date of disclosure, after which obligations regarding trade secrets shall expire unless otherwise protected by law.
+4.2 Notice Period. Either party may terminate discussions at any time upon thirty (30) days written notice.
+
+5. INTELLECTUAL PROPERTY AND REMEDIES
+5.1 No License. No patent, copyright, or trademark license is granted under this Agreement.
+5.2 Remedies. In the event of an alleged breach, the non-breaching party may seek injunctive relief from a competent court.
+
+6. GOVERNING LAW
+This Agreement shall be governed by the laws of California.

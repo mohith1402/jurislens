@@ -1,0 +1,61 @@
+EXECUTIVE EMPLOYMENT AGREEMENT
+
+This Executive Employment Agreement (the "Agreement") is entered into as of October 1, 2024, by and between Apex Cloud Systems Inc., a Delaware corporation (the "Company"), and Jane Doe ("Executive" or "Employee").
+
+1. POSITION AND RESPONSIBILITIES
+1.1 Title. The Company agrees to employ Executive as Principal AI Infrastructure Engineer, reporting directly to the Chief Technology Officer.
+1.2 Duties. Executive shall perform all duties customary to such position and such other duties as may be assigned from time to time by the Company.
+1.3 Best Efforts. Executive agrees to devote substantially all of Executive's business time, attention, and energies to the diligent performance of Company duties.
+
+2. TERM OF EMPLOYMENT
+2.1 At-Will Employment. Employment with the Company is "at-will." Both Executive and the Company have the right to terminate the employment relationship at any time, with or without cause, subject to the procedural provisions in Section 8.
+
+3. COMPENSATION AND BENEFITS
+3.1 Base Salary. The Company shall pay Executive an annualized base salary of $210,000 USD, payable in accordance with standard Company payroll procedures.
+3.2 Discretionary Bonus. Executive shall be eligible to participate in the Company's annual performance bonus plan with a target incentive of 20% of Base Salary, subject to Company and individual performance metrics determined solely by the Board of Directors.
+3.3 Benefits. Executive shall be eligible to participate in health insurance, retirement, and fringe benefit plans maintained by the Company for full-time employees.
+
+4. BUSINESS EXPENSES
+4.1 Reimbursement. The Company will reimburse Executive for reasonable, documented out-of-pocket business expenses incurred in the discharge of duties, in accordance with Company expense policies.
+
+5. CONFIDENTIAL INFORMATION AND TRADE SECRETS
+5.1 Definition. "Confidential Information" means all non-public, proprietary, confidential, or trade secret information of the Company, including software source code, customer lists, architectural designs, financial forecasts, and proprietary algorithms.
+5.2 Non-Disclosure. Executive agrees never to disclose, reproduce, or use any Confidential Information outside the authorized scope of employment during or subsequent to employment.
+5.3 Return of Property. Within five (5) business days following termination of employment for any reason, Executive shall deliver to the Company all laptops, access cards, documents, storage media, and tangible property belonging to the Company.
+
+6. INTELLECTUAL PROPERTY ASSIGNMENT
+6.1 Inventions and Works. Executive agrees that all discoveries, inventions, source code, designs, models, and improvements created, conceived, or authored by Executive (solely or jointly) during the period of employment, whether during working hours or using Company resources, shall be the sole and exclusive property of the Company as a "work made for hire."
+6.2 Pre-Existing Inventions. Any prior inventions claimed by Executive must be explicitly listed on an attached Schedule A. If no Schedule A is attached, Executive warrants that no pre-existing inventions exist.
+
+7. OUTSIDE ACTIVITIES
+7.1 Exclusivity. During the term of employment, Executive shall not engage in any other business activities, consulting, board advisory roles, or freelance engagements without the prior written consent of the Chief Executive Officer.
+
+8. TERMINATION AND NOTICE PERIOD
+8.1 Termination for Cause. The Company may terminate Executive's employment immediately without advance notice for "Cause," including willful misconduct, felony conviction, material breach of this Agreement, or gross negligence.
+8.2 Notice Period for Resignation. Executive must provide sixty (60) calendar days prior written notice to the Company before resigning or departing from the Company. The Company reserves the right to accelerate the departure date upon receipt of notice.
+8.3 Final Compensation. Upon separation, Executive shall receive accrued base salary and unused accrued vacation up to the effective termination date.
+
+9. RESTRICTIVE COVENANTS AND NON-COMPETE
+9.1 Non-Competition. In consideration of employment and access to trade secrets, Executive covenants and agrees that for a period of twenty-four (24) months following termination of employment for any reason, Executive shall not, directly or indirectly, engage in, consult for, advise, invest in, or work for any business entity that competes with the Company's cloud computing or artificial intelligence products within the United States or globally.
+9.2 Non-Solicitation of Customers. For a period of twenty-four (24) months post-termination, Executive shall not solicit or divert any customer or client of the Company with whom Executive had contact during the final twelve months of employment.
+9.3 Non-Solicitation of Employees. For a period of twenty-four (24) months post-termination, Executive shall not induce, recruit, or encourage any employee or contractor of the Company to terminate their relationship with the Company.
+
+10. INDEMNIFICATION AND LIABILITY
+10.1 Indemnification by Employee. Executive agrees to defend, indemnify, and hold harmless the Company, its directors, and officers against any and all claims, losses, or legal liabilities arising from Executive's willful breach of this Agreement or gross negligence.
+
+11. DISPUTE RESOLUTION AND MANDATORY ARBITRATION
+11.1 Mandatory Arbitration. Any controversy, dispute, or claim arising out of or relating to this Agreement or Executive's employment shall be settled exclusively by final and binding arbitration administered by JAMS in Dover, Delaware.
+11.2 Waiver of Jury Trial. The parties expressly waive any right to trial by jury in any action or proceeding arising out of or related to this Agreement.
+
+12. MISCELLANEOUS PROVISIONS
+12.1 Governing Law. This Agreement shall be governed by and construed in accordance with the laws of the State of Delaware, without regard to conflicts of law principles.
+12.2 Severability. If any provision of this Agreement is held to be invalid or unenforceable, such provision shall be modified to the minimum extent necessary, and the remaining provisions shall remain in full force.
+12.3 Entire Agreement. This Agreement constitutes the entire agreement between the parties and supersedes all prior negotiations, representations, or oral understandings.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the date first above written.
+
+APEX CLOUD SYSTEMS INC.
+By: /s/ Marcus Vance, CTO
+
+EXECUTIVE
+By: /s/ Jane Doe

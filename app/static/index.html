@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="JurisLens AI — GenAI-Powered Legal Assistance and Grounded Document Navigation using Google Gemini 2.5." />
+  <title>JurisLens AI — Grounded Legal Assistance & Document Navigation</title>
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body>
+  <!-- Screen Reader Accessible Skip Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ARIA Live Region for Screen Reader Announcements -->
+  <div id="aria-announcer" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- App Header -->
+  <header class="app-header" role="banner">
+    <div class="brand-container">
+      <div class="logo-badge" aria-hidden="true">⚖️ JL</div>
+      <div>
+        <h1 class="brand-title">JurisLens AI</h1>
+        <p class="brand-subtitle">Grounded Legal Assistance & Document Navigation</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <span class="badge-gemini" title="Powered by Google Gemini 2.5 Flash">
+        <span>✨</span> Google Gemini 2.5
+      </span>
+      <button id="theme-toggle-btn" class="btn btn-secondary" aria-label="Toggle High-Contrast Light or Dark Theme">
+        ☀️ Light Mode
+      </button>
+      <button id="open-brief-btn" class="btn btn-primary" disabled aria-label="Generate Attorney Consultation Packet">
+        📑 Lawyer Consultation Brief
+      </button>
+    </div>
+  </header>
+
+  <!-- Quick Document Ingestion Bar -->
+  <section style="background-color: var(--bg-card); border-bottom: 1px solid var(--border-color); padding: 0.75rem 2rem;" aria-label="Document Selection and Ingestion Toolbar">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; max-width: 1700px; margin: 0 auto;">
+      <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+        <label for="sample-select" style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">
+          Preloaded Contract Samples:
+        </label>
+        <select id="sample-select" class="btn btn-secondary" style="font-weight: 400; padding: 0.4rem 0.75rem;" aria-label="Select preloaded sample contract">
+          <option value="">Loading samples...</option>
+        </select>
+        <button id="load-sample-btn" class="btn btn-primary" style="padding: 0.4rem 0.85rem;">
+          ⚡ 1-Click Load & Analyze
+        </button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <label for="file-upload" class="btn btn-secondary" style="cursor: pointer; padding: 0.4rem 0.85rem;">
+          📁 Upload Contract (.txt, .pdf, .md)
+        </label>
+        <input type="file" id="file-upload" accept=".txt,.pdf,.md,.docx" style="display: none;" />
+        <button id="analyze-btn" class="btn btn-primary" style="padding: 0.4rem 0.85rem;">
+          🔍 Analyze Pasted Text
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Work Area: Side-by-Side Split View -->
+  <main id="main-content" class="main-container" role="main">
+    
+    <!-- LEFT PANE: Ingested Contract & Interactive Clause Explorer -->
+    <section class="pane" aria-labelledby="pane-contract-heading">
+      <header class="pane-header">
+        <div>
+          <h2 id="pane-contract-heading" class="pane-title">
+            📄 <span id="doc-title-header">Document Viewer</span>
+          </h2>
+          <span id="doc-meta-info" style="font-size: 0.75rem; color: var(--text-muted);">
+            No document loaded. Select a sample above or paste text below.
+          </span>
+        </div>
+      </header>
+
+      <div class="pane-content" id="clauses-container" tabindex="0" aria-label="Document Clauses List">
+        <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted);">
+          <p style="margin-bottom: 1rem; font-size: 1rem;">Paste contract text below or click <strong>"1-Click Load & Analyze"</strong> above to begin.</p>
+          <textarea 
+            id="raw-text-input" 
+            rows="14" 
+            style="width: 100%; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.75rem; font-family: var(--font-mono); font-size: 0.85rem; resize: vertical;"
+            placeholder="Paste raw agreement or contract text here..."
+            aria-label="Raw Contract Text Input Area"
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANE: Grounded Analysis, Missing Gaps, QA & Comparison -->
+    <section class="pane" aria-labelledby="pane-analysis-heading">
+      <header class="pane-header">
+        <h2 id="pane-analysis-heading" class="pane-title">
+          🛡️ Grounded Legal Intelligence
+        </h2>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">
+          Click any citation to jump & highlight source
+        </div>
+      </header>
+
+      <div class="pane-content" id="analysis-container" tabindex="0" aria-label="Grounded Legal Intelligence Panel">
+        <!-- Default Empty State -->
+        <div style="text-align: center; padding: 3rem 1.5rem; color: var(--text-muted);">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">⚖️</div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">
+            Experience Grounded Legal Assistance
+          </h3>
+          <p style="max-width: 500px; margin: 0 auto 1.5rem; font-size: 0.9rem; line-height: 1.6;">
+            Unlike general chat models that hallucinate summaries, JurisLens segments your contract, 
+            detects omissions, provides verbatim clause citations, and flags risk shifts.
+          </p>
+          <div style="display: inline-flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
+            <button class="btn btn-primary" onclick="document.getElementById('load-sample-btn').click()">
+              🚀 Try Sample Employment Agreement
+            </button>
+            <button class="btn btn-secondary" onclick="switchMainFeature('compare')">
+              🔄 Compare Two Contracts Side-by-Side
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Grounded Q&A Assistant -->
+      <footer style="border-top: 1px solid var(--border-color); background: var(--bg-card); padding: 1rem;" aria-label="Grounded Legal Question & Answer">
+        <div style="margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+          <label for="qa-input" style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">
+            Ask Grounded Legal Assistant (Anti-Hallucination Guardrail Active):
+          </label>
+        </div>
+
+        <!-- Quick Test Queries (Specific to the Challenge & Briefing Scenarios) -->
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.6rem;" id="qa-quick-prompts">
+          <span style="font-size: 0.75rem; color: var(--text-muted); align-self: center;">Quick Test:</span>
+          <button class="citation-chip" onclick="setQAPrompt('What is my notice period if I resign?')">
+            Notice Period (Clause 8.2)
+          </button>
+          <button class="citation-chip" onclick="setQAPrompt('What happens to my stock options if I resign?')">
+            Stock Options (Missing Info Test)
+          </button>
+          <button class="citation-chip" onclick="setQAPrompt('What are the non-compete restrictions?')">
+            Non-Compete Scope (Clause 9.1)
+          </button>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem;">
+          <input 
+            type="text" 
+            id="qa-input" 
+            placeholder="E.g., 'What happens to my IP after hours?' or 'Is there an indemnification requirement?'"
+            style="flex: 1; background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.5rem 0.75rem; font-size: 0.85rem;"
+            aria-label="Ask a question about the current document"
+          />
+          <button id="qa-submit-btn" class="btn btn-primary">
+            Ask Gemini
+          </button>
+        </div>
+
+        <!-- QA Output Area -->
+        <div id="qa-results-container"></div>
+      </footer>
+    </section>
+
+  </main>
+
+  <!-- Side-by-Side Comparison Section (Collapsible / Switchable) -->
+  <section id="compare-section" style="max-width: 1700px; margin: 0 auto 2rem; padding: 0 1.5rem; display: none;" aria-label="Contract Redline Comparison">
+    <div class="pane" style="padding: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div>
+          <h2 style="font-size: 1.2rem; font-weight: 700;">🔄 Contract Redline & Risk Shift Comparison</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Compare baseline vs proposed contracts (e.g. Standard Mutual NDA vs Aggressive Vendor NDA)
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button id="load-compare-samples-btn" class="btn btn-secondary">
+            ⚡ Load NDA Comparison Sample
+          </button>
+          <button id="run-compare-btn" class="btn btn-primary">
+            Run Redline Diff Analysis
+          </button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">
+            Document A (Standard Baseline)
+          </label>
+          <textarea id="compare-doc1-text" rows="8" style="width: 100%; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.5rem; font-size: 0.8rem; font-family: var(--font-mono);"></textarea>
+        </div>
+        <div>
+          <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">
+            Document B (Proposed Draft)
+          </label>
+          <textarea id="compare-doc2-text" rows="8" style="width: 100%; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.5rem; font-size: 0.8rem; font-family: var(--font-mono);"></textarea>
+        </div>
+      </div>
+
+      <div id="compare-results-container"></div>
+    </div>
+  </section>
+
+  <!-- Accessible Modal: Lawyer Consultation Brief -->
+  <div id="lawyer-brief-modal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="modal-title" style="font-size: 1.1rem; font-weight: 700;">
+          📑 Attorney Consultation Briefing Packet
+        </h3>
+        <button id="close-brief-btn" class="btn btn-secondary" style="padding: 0.25rem 0.5rem;" aria-label="Close modal">
+          ✕
+        </button>
+      </header>
+
+      <div class="modal-body" id="brief-content" tabindex="0">
+        Loading briefing packet...
+      </div>
+
+      <footer class="modal-footer">
+        <button id="copy-brief-btn" class="btn btn-secondary">
+          📋 Copy Packet to Clipboard
+        </button>
+        <button class="btn btn-primary" onclick="window.print()">
+          🖨️ Print / Save PDF
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Responsible Legal Disclaimer Footer -->
+  <footer style="background-color: var(--bg-surface); border-top: 1px solid var(--border-color); padding: 0.75rem 2rem; font-size: 0.75rem; color: var(--text-muted); text-align: center;" role="contentinfo">
+    <p>
+      ⚖️ <strong>Legal Notice:</strong> JurisLens AI is an educational document analysis and navigation tool powered by Google Gemini 2.5. 
+      It does not provide legal advice or substitute for professional legal counsel.
+    </p>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

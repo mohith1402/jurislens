@@ -1,0 +1,21 @@
+ONE-SIDED VENDOR NON-DISCLOSURE AND INDEMNITY AGREEMENT
+
+This Proprietary Information and Indemnity Agreement (the "Agreement") is entered into by Vendor MegaCorp ("Vendor") and Customer ("Recipient").
+
+1. PURPOSE AND DEFINITION
+1.1 Unilateral Disclosure. "Confidential Information" means any and all information, ideas, customer data, and source code disclosed by Vendor to Recipient.
+1.2 Perpetual Duration. Recipient agrees that confidentiality obligations shall persist in perpetuity and never expire.
+
+2. RESTRICTIVE COVENANTS
+2.1 Non-Solicitation. Recipient covenants that for thirty-six (36) months following disclosure, Recipient shall not hire, contract, or solicit any personnel of Vendor worldwide.
+2.2 Non-Competition. Recipient agrees not to develop or market any software or service competing with Vendor for a period of twenty-four (24) months.
+
+3. TERMINATION AND NOTICE
+3.1 Notice Period. Recipient may only terminate this agreement upon sixty (60) days advance written notice via registered mail.
+
+4. UNLIMITED INDEMNIFICATION AND LIQUIDATED DAMAGES
+4.1 Unilateral Indemnity. Recipient shall defend, hold harmless, and indemnify Vendor, its affiliates, and shareholders against any and all losses, costs, attorneys' fees, and indirect damages arising from any alleged breach by Recipient, without any monetary cap.
+4.2 Liquidated Damages. Any breach of confidentiality shall entitle Vendor to immediate liquidated damages of $250,000 USD per occurrence, in addition to actual damages.
+
+5. DISPUTE RESOLUTION
+5.1 Exclusive Jurisdiction. All disputes shall be litigated exclusively in the federal courts located in Wilmington, Delaware. Recipient waives all rights to jury trial and agrees to pay all of Vendor's legal fees in any dispute.
