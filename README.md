@@ -1,13 +1,13 @@
 # ⚖️ JurisLens AI — Grounded Legal Assistance & Document Navigation
 
-[![Live Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://promptwars-jurislens-nper2splvbqn6t9qhlry8z.streamlit.app)
+[![Live Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://promptwars-jurislens-mohith1402.streamlit.app)
 [![Google Gemini 2.5](https://img.shields.io/badge/Model-Google%20Gemini%202.5%20Flash-blue?logo=google)](https://ai.google.dev/)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI%20%2B%20Pydantic%20v2-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![WCAG 2.1 AA](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AA-success)](https://www.w3.org/WAI/WCAG21/quickref/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Repo Size](https://img.shields.io/badge/Repo%20Size-%3C%201%20MB-brightgreen)](https://github.com/)
 
-> **Live Interactive App**: [promptwars-jurislens-nper2splvbqn6t9qhlry8z.streamlit.app](https://promptwars-jurislens-nper2splvbqn6t9qhlry8z.streamlit.app)  
+> **Live Interactive App**: [promptwars-jurislens-mohith1402.streamlit.app](https://promptwars-jurislens-mohith1402.streamlit.app)  
 > Built for the **PromptWars Google for Developers Exclusive Challenge (Top 400)**.  
 > **Theme**: *AI for Legal Assistance & Access*
 
@@ -112,7 +112,7 @@ The evaluation briefing specifically requests a clean walkthrough demonstrating 
 
 ### 2. Clone and Setup Environment
 ```bash
-git clone https://github.com/your-username/promptwars-jurislens.git
+git clone https://github.com/mohith1402/promptwars-jurislens.git
 cd promptwars-jurislens
 
 # Create and activate virtual environment
