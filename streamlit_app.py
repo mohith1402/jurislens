@@ -25,9 +25,12 @@ from app.services.document_parser import document_parser
 from app.services.gemini_service import gemini_service
 
 # Sync Streamlit Secrets to environment if available on Streamlit Cloud
-if hasattr(st, "secrets") and "GEMINI_API_KEY" in st.secrets:
-    os.environ["GEMINI_API_KEY"] = st.secrets["GEMINI_API_KEY"]
-    settings.GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+try:
+    if "GEMINI_API_KEY" in st.secrets:
+        os.environ["GEMINI_API_KEY"] = st.secrets["GEMINI_API_KEY"]
+        settings.GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+except Exception:
+    pass
 
 # Custom CSS for accessible, high-contrast legal styling
 st.markdown(
