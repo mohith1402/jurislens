@@ -2,12 +2,11 @@
 
 import json
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from datetime import datetime
 
 from app.core.config import settings
 from app.models.schemas import (
-    Clause,
     DocumentAnalysisResponse,
     LawyerBriefResponse,
     MissingClauseAlert,
@@ -186,11 +185,11 @@ CRITICAL ANTI-HALLUCINATION RULES:
 
         # Format clean Markdown briefing sheet
         md_lines = [
-            f"# LEGAL CONSULTATION BRIEFING PACKET",
+            "# LEGAL CONSULTATION BRIEFING PACKET",
             f"**Document**: {doc.filename}  ",
             f"**Document Type**: {analysis.document_type}  ",
             f"**Generated**: {date_str}  ",
-            f"**Prepared by**: JurisLens AI (Powered by Google Gemini 2.5)  ",
+            "**Prepared by**: JurisLens AI (Powered by Google Gemini 2.5)  ",
             f"**Overall Risk Index**: {analysis.overall_risk_score}/100 ({analysis.risk_level.value})  \n",
             "---",
             "## 1. EXECUTIVE SUMMARY",
@@ -289,7 +288,11 @@ CRITICAL ANTI-HALLUCINATION RULES:
                 has_at_will = "at-will" in text_lower or "at will" in text_lower
                 has_immediate = "immediate" in text_lower or "without notice" in text_lower
 
-                severity = RiskLevel.HIGH if (has_immediate and not has_60_days) else RiskLevel.MEDIUM
+                severity = (
+                    RiskLevel.HIGH
+                    if (has_immediate or (has_at_will and not has_60_days))
+                    else RiskLevel.MEDIUM
+                )
                 total_risk_points += 10
 
                 snippet = clause.text[:140] + "..." if len(clause.text) > 140 else clause.text

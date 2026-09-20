@@ -1,7 +1,7 @@
 """Verification and Grounding Citation Engine for JurisLens AI."""
 
 import re
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 from app.models.schemas import Clause, ParsedDocument, CitationMatch
 
 

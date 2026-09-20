@@ -11,7 +11,7 @@ def test_document_parser_content_caching(sample_employment_text):
     """Verify SHA-256 content-addressed cache returns in under 1ms."""
     # Warmup
     doc1 = document_parser.parse_text(sample_employment_text, filename="perf_test.txt")
-    
+
     # Timed cached execution
     start = time.perf_counter()
     doc2 = document_parser.parse_text(sample_employment_text, filename="perf_test.txt")
@@ -24,7 +24,7 @@ def test_document_parser_content_caching(sample_employment_text):
 def test_citation_engine_lookup_performance(parsed_employment_doc):
     """Verify O(1) indexed clause lookup can resolve 100 queries in under 5ms."""
     queries = ["8.2", "Clause 8.2", "Section 1", "Clause 4", "9.1", "clause_1"] * 20
-    
+
     start = time.perf_counter()
     for q in queries:
         clause = citation_engine.resolve_clause(q, parsed_employment_doc)
@@ -38,7 +38,7 @@ def test_citation_engine_lookup_performance(parsed_employment_doc):
 async def test_gemini_analysis_memoization(parsed_employment_doc):
     """Verify analysis memoization cache returns identical results instantly."""
     res1 = await gemini_service.analyze_document(parsed_employment_doc)
-    
+
     start = time.perf_counter()
     res2 = await gemini_service.analyze_document(parsed_employment_doc)
     duration_ms = (time.perf_counter() - start) * 1000

@@ -4,7 +4,6 @@ from typing import List
 from app.models.schemas import (
     ComparisonDifference,
     ComparisonResponse,
-    ParsedDocument,
 )
 from app.services.document_parser import document_parser
 

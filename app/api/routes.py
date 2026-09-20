@@ -1,8 +1,8 @@
 """API Route Handlers for JurisLens AI."""
 
 import os
-from typing import List, Optional
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
+from typing import Optional
+from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from pydantic import BaseModel
 
 from app.core.config import settings
@@ -17,7 +17,6 @@ from app.models.schemas import (
     QARequest,
     QAResponse,
 )
-from app.services.citation_engine import citation_engine
 from app.services.comparison_engine import comparison_engine
 from app.services.document_parser import document_parser
 from app.services.gemini_service import gemini_service

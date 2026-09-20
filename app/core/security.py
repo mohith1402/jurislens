@@ -1,6 +1,5 @@
 """Security utilities, validation, and sanitization for JurisLens AI."""
 
-import html
 import re
 import time
 from typing import Dict, Tuple

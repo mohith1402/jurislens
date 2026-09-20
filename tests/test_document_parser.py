@@ -1,6 +1,5 @@
 """Unit tests for the Document Parser and Clause Segmenter."""
 
-import pytest
 from app.services.document_parser import document_parser
 
 
