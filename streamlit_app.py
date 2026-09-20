@@ -748,7 +748,7 @@ if st.session_state.current_analysis:
 
             for m in analysis.missing_protections:
                 safe_topic = html.escape(str(m.topic))
-                safe_description = html.escape(str(m.description))
+                safe_desc = html.escape(str(m.description))
                 safe_significance = html.escape(str(m.significance))
                 safe_inquiry = html.escape(str(m.suggested_inquiry))
 
@@ -759,7 +759,7 @@ if st.session_state.current_analysis:
                             <strong style="color: #fbbf24; font-size: 0.95rem;">⚠️ Missing: {safe_topic}</strong>
                             <span class="m3-badge m3-badge-medium">Omission</span>
                         </div>
-                        <p style="font-size: 0.88rem; color: #f8fafc; margin-bottom: 0.4rem; line-height: 1.5;">{safe_description}</p>
+                        <p style="font-size: 0.88rem; color: #f8fafc; margin-bottom: 0.4rem; line-height: 1.5;">{safe_desc}</p>
                         <div style="font-size: 0.84rem; color: #cbd5e1; margin-bottom: 0.5rem; line-height: 1.5;">
                             <strong style="color: #fca5a5;">Why This Hurts You:</strong> {safe_significance}
                         </div>
@@ -834,9 +834,12 @@ if st.session_state.current_analysis:
             qa_req = QARequest(document_id=doc.document_id, question=custom_q, user_role="employee")
             qa_res = asyncio.run(gemini_service.answer_question(doc, qa_req))
 
+            # Pre-extract and sanitize Q&A response strings
+            safe_qa_answer = html.escape(str(qa_res.answer))
+            safe_qa_guidance = html.escape(str(qa_res.verification_guidance))
+            safe_qa_followup = html.escape(str(qa_res.lawyer_follow_up))
+
             if qa_res.is_found_in_document:
-                safe_qa_answer = html.escape(str(qa_res.answer))
-                safe_qa_guidance = html.escape(str(qa_res.verification_guidance))
                 st.markdown(
                     f"""
                     <div class="glass-panel" style="border-left: 4px solid #10b981;">
@@ -855,9 +858,6 @@ if st.session_state.current_analysis:
                     unsafe_allow_html=True,
                 )
             else:
-                safe_qa_answer = html.escape(str(qa_res.answer))
-                safe_qa_guidance = html.escape(str(qa_res.verification_guidance))
-                safe_qa_followup = html.escape(str(qa_res.lawyer_follow_up))
                 st.markdown(
                     f"""
                     <div class="glass-panel" style="border-left: 4px solid #ef4444;">
