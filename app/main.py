@@ -53,7 +53,23 @@ app.add_middleware(
     allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=ALLOWED_CORS_HEADERS,
+    allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "Accept",
+        "X-Requested-With",
+        "Cache-Control",
+        "Pragma",
+        "Origin",
+        "User-Agent",
+        "X-Forwarded-For",
+        "X-Forwarded-Proto",
+        "Upgrade",
+        "Connection",
+        "Sec-WebSocket-Key",
+        "Sec-WebSocket-Version",
+        "Sec-WebSocket-Extensions",
+    ],
 )
 
 
