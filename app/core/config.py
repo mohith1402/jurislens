@@ -47,6 +47,8 @@ class Settings(BaseSettings):
     @property
     def has_live_gemini_key(self) -> bool:
         """Verify whether a real Gemini API key is configured."""
+        if self.ENVIRONMENT.lower() == "test":
+            return False
         if not self.GEMINI_API_KEY:
             return False
         placeholder_values = {"your_gemini_api_key_here", "dummy", "placeholder", "none"}
