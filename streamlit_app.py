@@ -92,11 +92,13 @@ st.markdown(
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
-        padding: 0.28rem 0.75rem;
+        padding: 0.25rem 0.65rem;
         border-radius: 9999px;
-        font-size: 0.78rem;
+        font-size: 0.76rem;
         font-weight: 700;
         letter-spacing: 0.02em;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
     }
     .m3-badge-gemini {
         background: rgba(56, 189, 248, 0.15);
@@ -286,23 +288,41 @@ st.markdown(
         color: #34d399;
     }
 
-    /* Clean Tab Styling to prevent truncation and improve alignment */
+    /* Clean Tab Styling with Smooth Sliding Indicator Animation */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 0.25rem;
-        background-color: transparent;
-        padding-bottom: 0.15rem;
+        background-color: transparent !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        padding: 0 !important;
+        margin-bottom: 0.85rem !important;
     }
     .stTabs [data-baseweb="tab"] {
-        padding: 0.38rem 0.65rem !important;
-        font-size: 0.82rem !important;
+        padding: 0.42rem 0.75rem !important;
+        font-size: 0.83rem !important;
         font-weight: 600 !important;
-        border-radius: 8px 8px 0 0;
-        white-space: nowrap;
+        white-space: nowrap !important;
+        background-color: transparent !important;
+        border: none !important;
+        outline: none !important;
+        border-radius: 6px 6px 0 0 !important;
+        transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .stTabs [data-baseweb="tab"]:hover {
+        color: #e0f2fe !important;
+        background-color: rgba(56, 189, 248, 0.06) !important;
     }
     .stTabs [aria-selected="true"] {
-        background-color: rgba(56, 189, 248, 0.12) !important;
+        background-color: rgba(56, 189, 248, 0.1) !important;
         color: #38bdf8 !important;
-        border-bottom: 2px solid #38bdf8 !important;
+        border: none !important;
+    }
+    .stTabs [data-baseweb="tab-highlight"] {
+        background-color: #38bdf8 !important;
+        height: 2.5px !important;
+        border-radius: 2px !important;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .stTabs [data-baseweb="tab-border"] {
+        display: none !important;
     }
     </style>
     """,
@@ -580,9 +600,9 @@ if st.session_state.current_analysis:
         safe_doc_filename = html.escape(str(doc.filename))
         st.markdown(
             f"""
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.6rem; min-height: 38px;">
-                <h3 style="font-size: 1.2rem; font-weight: 700; margin: 0; color:#f8fafc;">📄 Source Clauses: {safe_doc_filename}</h3>
-                <span class="m3-badge m3-badge-citation">{len(doc.clauses)} Segments</span>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.6rem; min-height: 38px; gap: 0.75rem; flex-wrap: nowrap;">
+                <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0; color:#f8fafc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="📄 Source Clauses: {safe_doc_filename}">📄 Source Clauses: {safe_doc_filename}</h3>
+                <span class="m3-badge m3-badge-citation" style="white-space: nowrap !important; flex-shrink: 0 !important;">{len(doc.clauses)} Segments</span>
             </div>
             """,
             unsafe_allow_html=True,
@@ -641,9 +661,9 @@ if st.session_state.current_analysis:
     with right_col:
         st.markdown(
             """
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.6rem; min-height: 38px;">
-                <h3 style="font-size: 1.2rem; font-weight: 700; margin: 0; color:#f8fafc;">🛡️ Grounded Legal Intelligence</h3>
-                <span class="m3-badge m3-badge-gemini">📍 Exact Citations Grounded</span>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.6rem; min-height: 38px; gap: 0.75rem; flex-wrap: nowrap;">
+                <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0; color:#f8fafc; white-space: nowrap;">🛡️ Grounded Legal Intelligence</h3>
+                <span class="m3-badge m3-badge-gemini" style="white-space: nowrap !important; flex-shrink: 0 !important;">📍 Citations Grounded</span>
             </div>
             """,
             unsafe_allow_html=True,
