@@ -104,44 +104,10 @@ The evaluation briefing specifically requests a clean walkthrough demonstrating 
 
 ---
 
-## 🚀 Quickstart & Installation
+## 🔗 Project Links
 
-### 1. Prerequisites
-- Python 3.9+ installed
-- Git
-
-### 2. Clone and Setup Environment
-```bash
-git clone https://github.com/mohith1402/promptwars-jurislens.git
-cd promptwars-jurislens
-
-# Create and activate virtual environment
-python3 -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install dependencies (< 30 seconds)
-pip install -r requirements.txt
-```
-
-### 3. Configure Environment (Optional)
-JurisLens includes a **deterministic high-fidelity offline legal engine**, allowing full functionality and automated testing without an API key. To use live Google Gemini 2.5:
-
-```bash
-cp .env.example .env
-# Edit .env and insert your GEMINI_API_KEY
-```
-
-```env
-GEMINI_API_KEY=AIzaSy...your_gemini_api_key_here
-GEMINI_MODEL=gemini-2.5-flash
-```
-
-### 4. Run the Application
-```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
-Open your browser at **http://localhost:8000**.  
-API documentation is available at **http://localhost:8000/docs**.
+- 🌐 **Live Deployed App**: [https://promptwars-jurislens-mohith1402.streamlit.app](https://promptwars-jurislens-mohith1402.streamlit.app)
+- 💻 **Public GitHub Repository**: [https://github.com/mohith1402/promptwars-jurislens](https://github.com/mohith1402/promptwars-jurislens)
 
 ---
 
