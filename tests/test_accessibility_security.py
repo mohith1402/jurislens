@@ -67,3 +67,14 @@ def test_html_accessibility_elements():
     assert 'aria-label=' in html_content
     assert 'role="dialog"' in html_content
     assert 'aria-modal="true"' in html_content
+
+
+def test_cors_explicit_headers_no_wildcard():
+    """Verify CORS uses an explicit allowed header array without wildcard *."""
+    from app.main import ALLOWED_CORS_HEADERS
+
+    assert "*" not in ALLOWED_CORS_HEADERS
+    assert "Authorization" in ALLOWED_CORS_HEADERS
+    assert "Upgrade" in ALLOWED_CORS_HEADERS
+    assert "Sec-WebSocket-Key" in ALLOWED_CORS_HEADERS
+    assert "Content-Type" in ALLOWED_CORS_HEADERS

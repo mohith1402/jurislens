@@ -29,13 +29,31 @@ app.add_middleware(GZipMiddleware, minimum_size=500)
 # Apply OWASP Security Headers Middleware
 app.add_middleware(SecurityHeadersMiddleware)
 
+ALLOWED_CORS_HEADERS = [
+    "Content-Type",
+    "Authorization",
+    "Accept",
+    "X-Requested-With",
+    "Cache-Control",
+    "Pragma",
+    "Origin",
+    "User-Agent",
+    "X-Forwarded-For",
+    "X-Forwarded-Proto",
+    "Upgrade",
+    "Connection",
+    "Sec-WebSocket-Key",
+    "Sec-WebSocket-Version",
+    "Sec-WebSocket-Extensions",
+]
+
 # Apply CORS Protection
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=ALLOWED_CORS_HEADERS,
 )
 
 
@@ -43,13 +61,24 @@ app.add_middleware(
 async def rate_limit_middleware(request: Request, call_next):
     """Enforce basic IP rate limiting for API endpoints."""
     if request.url.path.startswith("/api/"):
-        client_ip = request.client.host if request.client else "127.0.0.1"
+        try:
+            client_ip = request.client.host if request.client else "127.0.0.1"
+        except Exception:
+            client_ip = "127.0.0.1"
+
         if not rate_limiter.check(client_ip):
             return JSONResponse(
                 status_code=429,
                 content={"detail": "Too many requests. Please slow down your requests."},
             )
-    return await call_next(request)
+
+    try:
+        return await call_next(request)
+    except Exception:
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "Internal server error. An unexpected error occurred."},
+        )
 
 
 # Include API Endpoints

@@ -5,6 +5,7 @@ Powered by Google Gemini 2.5 Flash.
 """
 
 import asyncio
+import html
 import os
 import streamlit as st
 
@@ -19,7 +20,6 @@ st.set_page_config(
 # Load environment configuration and fallback
 from app.core.config import settings
 from app.models.schemas import QARequest, RiskLevel
-from app.services.citation_engine import citation_engine
 from app.services.comparison_engine import comparison_engine
 from app.services.document_parser import document_parser
 from app.services.gemini_service import gemini_service
@@ -443,7 +443,7 @@ with st.sidebar:
             <span>🟢</span>
             <div>
                 <strong style="color:#f8fafc;">All Systems Operational</strong><br/>
-                <span style="color:#94a3b8; font-size:0.68rem;">30/30 Tests Passing • WCAG 2.1 AA</span>
+                <span style="color:#94a3b8; font-size:0.68rem;">31/31 Tests Passing • WCAG 2.1 AA</span>
             </div>
         </div>
         """,
@@ -500,12 +500,13 @@ if st.session_state.current_analysis:
         )
 
     with c2:
+        safe_doc_type = html.escape(str(analysis.document_type))
         st.markdown(
             f"""
             <div class="stat-card">
                 <span class="stat-label">Document Classification</span>
                 <div class="stat-value" style="font-size:1.05rem; color:#38bdf8; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                    💼 {analysis.document_type}
+                    💼 {safe_doc_type}
                 </div>
             </div>
             """,
@@ -553,6 +554,7 @@ if st.session_state.current_analysis:
         else "✅ LOW RISK: Standard Balanced Agreement"
     )
 
+    safe_executive_summary = html.escape(str(analysis.executive_summary))
     st.markdown(
         f"""
         <div class="glass-panel" style="border-left: 4px solid {risk_accent}; margin-bottom: 1.25rem; padding: 1.1rem 1.4rem;">
@@ -563,7 +565,7 @@ if st.session_state.current_analysis:
                 <span class="m3-badge m3-badge-citation" style="font-size: 0.78rem;">💡 Plain-English TL;DR</span>
             </div>
             <div style="font-size: 0.92rem; color: #f1f5f9; line-height: 1.6;">
-                {analysis.executive_summary}
+                {safe_executive_summary}
             </div>
         </div>
         """,
@@ -575,10 +577,11 @@ if st.session_state.current_analysis:
 
     # LEFT COLUMN: Original Contract Text
     with left_col:
+        safe_doc_filename = html.escape(str(doc.filename))
         st.markdown(
             f"""
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.6rem; min-height: 38px;">
-                <h3 style="font-size: 1.2rem; font-weight: 700; margin: 0; color:#f8fafc;">📄 Source Clauses: {doc.filename}</h3>
+                <h3 style="font-size: 1.2rem; font-weight: 700; margin: 0; color:#f8fafc;">📄 Source Clauses: {safe_doc_filename}</h3>
                 <span class="m3-badge m3-badge-citation">{len(doc.clauses)} Segments</span>
             </div>
             """,
@@ -610,20 +613,22 @@ if st.session_state.current_analysis:
             is_open = bool(search_clause) or (filter_cat != "All Categories") or (displayed_count <= 2)
 
             with st.expander(f"Clause {clause.number}: {clean_title}", expanded=is_open):
+                safe_category = html.escape(str(clause.category))
                 st.markdown(
                     f"""
                     <div style="display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.6rem; font-size:0.75rem;">
-                        <span class="m3-badge m3-badge-citation">{clause.category}</span>
+                        <span class="m3-badge m3-badge-citation">{safe_category}</span>
                         <span style="color:#94a3b8; padding:0.2rem 0.5rem; background:rgba(255,255,255,0.06); border-radius:6px;">Page {clause.page_number}</span>
                         <span style="color:#94a3b8; padding:0.2rem 0.5rem; background:rgba(255,255,255,0.06); border-radius:6px;">Lines {clause.line_start}–{clause.line_end}</span>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
+                safe_clause_text = html.escape(str(clause.text))
                 st.markdown(
                     f"""
                     <div style="background:rgba(15,23,42,0.6); border-left:3px solid #6366f1; padding:0.75rem 1rem; border-radius:6px; font-size:0.88rem; line-height:1.6; color:#f1f5f9;">
-                        {clause.text}
+                        {safe_clause_text}
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -663,28 +668,34 @@ if st.session_state.current_analysis:
                     else "m3-badge-medium" if f.risk_level == RiskLevel.MEDIUM
                     else "m3-badge-low"
                 )
+                safe_clause_title = html.escape(str(f.clause_title))
+                safe_risk_level = html.escape(str(f.risk_level.value))
+                safe_clause_number = html.escape(str(f.clause_number))
+                safe_summary = html.escape(str(f.plain_summary))
+                safe_risk = html.escape(str(f.potential_risk))
+                safe_action = html.escape(str(f.action_item))
 
                 st.markdown(
                     f"""
                     <div class="risk-box">
                         <div class="risk-box-header">
-                            <span class="risk-box-title">{f.clause_title}</span>
+                            <span class="risk-box-title">{safe_clause_title}</span>
                             <div style="display:flex; gap:0.4rem;">
-                                <span class="m3-badge {sev_badge}">{f.risk_level.value} RISK</span>
-                                <span class="m3-badge m3-badge-citation">Clause {f.clause_number}</span>
+                                <span class="m3-badge {sev_badge}">{safe_risk_level} RISK</span>
+                                <span class="m3-badge m3-badge-citation">Clause {safe_clause_number}</span>
                             </div>
                         </div>
                         <div style="margin-bottom: 0.6rem;">
                             <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; color: #38bdf8; letter-spacing: 0.04em;">💡 In Simple Terms</span>
-                            <div style="font-size: 0.9rem; color: #f8fafc; margin-top: 0.15rem; line-height: 1.5;">{f.plain_summary}</div>
+                            <div style="font-size: 0.9rem; color: #f8fafc; margin-top: 0.15rem; line-height: 1.5;">{safe_summary}</div>
                         </div>
                         <div style="margin-bottom: 0.6rem;">
                             <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; color: #f87171; letter-spacing: 0.04em;">⚠️ The Trap / Legal Exposure</span>
-                            <div style="font-size: 0.86rem; color: #cbd5e1; margin-top: 0.15rem; line-height: 1.5;">{f.potential_risk}</div>
+                            <div style="font-size: 0.86rem; color: #cbd5e1; margin-top: 0.15rem; line-height: 1.5;">{safe_risk}</div>
                         </div>
                         <div class="action-callout">
                             <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; color: #38bdf8; letter-spacing: 0.04em;">🎯 What You Should Ask For</span>
-                            <div style="margin-top: 0.15rem; font-size: 0.86rem; color: #e0f2fe; line-height: 1.5;">{f.action_item}</div>
+                            <div style="margin-top: 0.15rem; font-size: 0.86rem; color: #e0f2fe; line-height: 1.5;">{safe_action}</div>
                         </div>
                     </div>
                     """,
@@ -695,19 +706,25 @@ if st.session_state.current_analysis:
         with tab_obligations:
             st.caption("Actionable duties, strict notification deadlines, and breach penalties:")
             for o in analysis.obligations_checklist:
+                safe_party = html.escape(str(o.party))
+                safe_clause_number = html.escape(str(o.clause_number))
+                safe_obligation = html.escape(str(o.obligation))
+                safe_deadline = html.escape(str(o.deadline_or_trigger))
+                safe_consequence = html.escape(str(o.consequence))
+
                 st.markdown(
                     f"""
                     <div class="obligation-card">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.4rem;">
-                            <strong style="color:#38bdf8; font-size:0.92rem;">👤 Party: {o.party}</strong>
-                            <span class="m3-badge m3-badge-citation">Clause {o.clause_number}</span>
+                            <strong style="color:#38bdf8; font-size:0.92rem;">👤 Party: {safe_party}</strong>
+                            <span class="m3-badge m3-badge-citation">Clause {safe_clause_number}</span>
                         </div>
                         <div style="font-size: 0.88rem; color: #f8fafc; margin-bottom: 0.45rem; line-height: 1.5;">
-                            <strong>Required Duty:</strong> {o.obligation}
+                            <strong>Required Duty:</strong> {safe_obligation}
                         </div>
                         <div style="display:flex; gap: 1rem; flex-wrap: wrap; font-size: 0.82rem;">
-                            <span style="color: #fbbf24;">⏳ <strong>Deadline:</strong> {o.deadline_or_trigger}</span>
-                            <span style="color: #f87171;">⚠️ <strong>Consequence:</strong> {o.consequence}</span>
+                            <span style="color: #fbbf24;">⏳ <strong>Deadline:</strong> {safe_deadline}</span>
+                            <span style="color: #f87171;">⚠️ <strong>Consequence:</strong> {safe_consequence}</span>
                         </div>
                     </div>
                     """,
@@ -730,19 +747,24 @@ if st.session_state.current_analysis:
             )
 
             for m in analysis.missing_protections:
+                safe_topic = html.escape(str(m.topic))
+                safe_description = html.escape(str(m.description))
+                safe_significance = html.escape(str(m.significance))
+                safe_inquiry = html.escape(str(m.suggested_inquiry))
+
                 st.markdown(
                     f"""
                     <div class="missing-box">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.4rem;">
-                            <strong style="color: #fbbf24; font-size: 0.95rem;">⚠️ Missing: {m.topic}</strong>
+                            <strong style="color: #fbbf24; font-size: 0.95rem;">⚠️ Missing: {safe_topic}</strong>
                             <span class="m3-badge m3-badge-medium">Omission</span>
                         </div>
-                        <p style="font-size: 0.88rem; color: #f8fafc; margin-bottom: 0.4rem; line-height: 1.5;">{m.description}</p>
+                        <p style="font-size: 0.88rem; color: #f8fafc; margin-bottom: 0.4rem; line-height: 1.5;">{safe_description}</p>
                         <div style="font-size: 0.84rem; color: #cbd5e1; margin-bottom: 0.5rem; line-height: 1.5;">
-                            <strong style="color: #fca5a5;">Why This Hurts You:</strong> {m.significance}
+                            <strong style="color: #fca5a5;">Why This Hurts You:</strong> {safe_significance}
                         </div>
                         <div style="background: rgba(0,0,0,0.25); border-left: 3px solid #fbbf24; padding: 0.55rem 0.75rem; border-radius: 6px; font-size: 0.83rem; color: #fde68a; line-height: 1.45;">
-                            <strong>Clarification to Request:</strong> {m.suggested_inquiry}
+                            <strong>Clarification to Request:</strong> {safe_inquiry}
                         </div>
                     </div>
                     """,
@@ -767,10 +789,11 @@ if st.session_state.current_analysis:
             with d_col2:
                 st.info("💡 Ready to print or copy into your attorney intake form.")
 
+            safe_brief_markdown = html.escape(str(brief.formatted_markdown))
             st.markdown(
                 f"""
                 <div class="glass-panel" style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.6; max-height: 480px; overflow-y: auto; white-space: pre-wrap; background: rgba(15,23,42,0.7);">
-{brief.formatted_markdown}
+{safe_brief_markdown}
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -812,6 +835,8 @@ if st.session_state.current_analysis:
             qa_res = asyncio.run(gemini_service.answer_question(doc, qa_req))
 
             if qa_res.is_found_in_document:
+                safe_qa_answer = html.escape(str(qa_res.answer))
+                safe_qa_guidance = html.escape(str(qa_res.verification_guidance))
                 st.markdown(
                     f"""
                     <div class="glass-panel" style="border-left: 4px solid #10b981;">
@@ -820,16 +845,19 @@ if st.session_state.current_analysis:
                             <span style="font-size: 0.75rem; color: #94a3b8;">Verified Grounding</span>
                         </div>
                         <div style="font-size: 0.95rem; color: #f8fafc; margin-bottom: 0.6rem; font-weight: 500; line-height: 1.55;">
-                            {qa_res.answer}
+                            {safe_qa_answer}
                         </div>
                         <div style="font-size: 0.82rem; color: #38bdf8; background: rgba(56, 189, 248, 0.08); padding: 0.5rem; border-radius: 6px;">
-                            📍 <strong>Verified Coordinates:</strong> {qa_res.verification_guidance}
+                            📍 <strong>Verified Coordinates:</strong> {safe_qa_guidance}
                         </div>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
             else:
+                safe_qa_answer = html.escape(str(qa_res.answer))
+                safe_qa_guidance = html.escape(str(qa_res.verification_guidance))
+                safe_qa_followup = html.escape(str(qa_res.lawyer_follow_up))
                 st.markdown(
                     f"""
                     <div class="glass-panel" style="border-left: 4px solid #ef4444;">
@@ -838,13 +866,13 @@ if st.session_state.current_analysis:
                             <span style="font-size: 0.75rem; color: #f87171;">Strict Guardrail</span>
                         </div>
                         <div style="font-size: 0.95rem; color: #f8fafc; margin-bottom: 0.6rem; font-weight: 500; line-height: 1.55;">
-                            {qa_res.answer}
+                            {safe_qa_answer}
                         </div>
                         <div style="font-size: 0.82rem; color: #fbbf24; background: rgba(245, 158, 11, 0.1); padding: 0.5rem; border-radius: 6px; margin-bottom: 0.4rem;">
-                            💡 <strong>Verification Guidance:</strong> {qa_res.verification_guidance}
+                            💡 <strong>Verification Guidance:</strong> {safe_qa_guidance}
                         </div>
                         <div style="font-size: 0.82rem; color: #38bdf8; background: rgba(56, 189, 248, 0.08); padding: 0.5rem; border-radius: 6px;">
-                            ⚖️ <strong>Recommended Inquiry for Counsel:</strong> {qa_res.lawyer_follow_up}
+                            ⚖️ <strong>Recommended Inquiry for Counsel:</strong> {safe_qa_followup}
                         </div>
                     </div>
                     """,
@@ -875,23 +903,30 @@ if st.session_state.current_analysis:
                     else "m3-badge-medium" if d.risk_shift == "MORE_FAVORABLE_DOC1"
                     else "m3-badge-low"
                 )
+                safe_category = html.escape(str(d.category))
+                safe_clause_title = html.escape(str(d.clause_title))
+                safe_risk_shift = html.escape(str(d.risk_shift.replace('_', ' ')))
+                safe_doc1_snippet = html.escape(str(d.doc1_snippet))
+                safe_doc2_snippet = html.escape(str(d.doc2_snippet))
+                safe_explanation = html.escape(str(d.explanation))
+
                 st.markdown(
                     f"""
                     <div class="glass-panel" style="padding: 0.85rem; margin-bottom: 0.6rem;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.4rem;">
-                            <strong>{d.category}: {d.clause_title}</strong>
-                            <span class="m3-badge {diff_badge}">{d.risk_shift.replace('_', ' ')}</span>
+                            <strong>{safe_category}: {safe_clause_title}</strong>
+                            <span class="m3-badge {diff_badge}">{safe_risk_shift}</span>
                         </div>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; font-size: 0.82rem; margin-bottom: 0.4rem;">
                             <div style="background:rgba(0,0,0,0.25); padding: 0.5rem; border-radius: 6px;">
-                                <span style="color:#94a3b8; font-weight:600;">Standard Baseline:</span><br/>{d.doc1_snippet}
+                                <span style="color:#94a3b8; font-weight:600;">Standard Baseline:</span><br/>{safe_doc1_snippet}
                             </div>
                             <div style="background:rgba(0,0,0,0.25); padding: 0.5rem; border-radius: 6px;">
-                                <span style="color:#94a3b8; font-weight:600;">Proposed Draft:</span><br/>{d.doc2_snippet}
+                                <span style="color:#94a3b8; font-weight:600;">Proposed Draft:</span><br/>{safe_doc2_snippet}
                             </div>
                         </div>
                         <div style="font-size: 0.82rem; color: #38bdf8;">
-                            <strong>Delta Analysis:</strong> {d.explanation}
+                            <strong>Delta Analysis:</strong> {safe_explanation}
                         </div>
                     </div>
                     """,
