@@ -1,5 +1,6 @@
 """Document Ingestion and Clause Boundary Segmentation Service."""
 
+import hashlib
 import re
 import uuid
 from typing import Dict, List, Optional
@@ -7,6 +8,7 @@ from app.models.schemas import Clause, ParsedDocument
 
 # In-memory document storage for session-based fast retrieval
 DOCUMENTS_CACHE: Dict[str, ParsedDocument] = {}
+CONTENT_HASH_CACHE: Dict[str, ParsedDocument] = {}
 
 
 class DocumentParser:
@@ -49,7 +51,12 @@ class DocumentParser:
         """
         Parses raw text into discrete, numbered, navigable legal clauses.
         Estimates pages and lines for real-time split-screen synchronization.
+        Uses SHA-256 content memoization for sub-millisecond repeated parsing.
         """
+        content_key = hashlib.sha256(f"{filename}:{raw_text}".encode("utf-8")).hexdigest()
+        if content_key in CONTENT_HASH_CACHE:
+            return CONTENT_HASH_CACHE[content_key]
+
         lines = raw_text.splitlines()
         clauses: List[Clause] = []
 
@@ -166,7 +173,18 @@ class DocumentParser:
             clauses=clauses,
         )
 
+        # Build O(1) fast lookup index for citation resolver
+        lookup: Dict[str, Clause] = {}
+        for c in clauses:
+            lookup[c.clause_id.lower()] = c
+            lookup[c.number.lower()] = c
+            lookup[f"clause {c.number}".lower()] = c
+            lookup[f"section {c.number}".lower()] = c
+            lookup[c.title.lower()] = c
+        setattr(parsed, "_lookup", lookup)
+
         DOCUMENTS_CACHE[doc_id] = parsed
+        CONTENT_HASH_CACHE[content_key] = parsed
         return parsed
 
     @classmethod

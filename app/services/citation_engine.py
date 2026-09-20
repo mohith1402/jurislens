@@ -8,13 +8,36 @@ from app.models.schemas import Clause, ParsedDocument, CitationMatch
 class CitationEngine:
     """Verifies citations, detects hallucinations, and anchors AI findings to source text."""
 
+    # Pre-compiled static regex patterns (avoids runtime compilation overhead)
+    CITATION_PATTERNS = [
+        re.compile(r"\[(?:Clause|Section)\s+([0-9A-Za-z\.]+)\]", re.IGNORECASE),
+        re.compile(r"\b(?:Clause|Section|Article)\s+([0-9A-Za-z\.]+)\b", re.IGNORECASE),
+        re.compile(r"\bclause_([0-9]+)\b", re.IGNORECASE),
+    ]
+    CLEAN_PREFIX_PATTERN = re.compile(r"^(?:Clause|Section|Article|Sec|Art)\s*", re.IGNORECASE)
+    WORD_PATTERN = re.compile(r"\w+")
+    STOP_WORDS = frozenset({"the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by", "as", "is", "was", "are", "were", "be", "been"})
+
     @classmethod
     def resolve_clause(cls, citation_str: str, doc: ParsedDocument) -> Optional[Clause]:
         """
         Resolves references like '8.2', 'Clause 8.2', 'Section 4' to a concrete Clause object.
+        Leverages pre-computed O(1) lookup table when available for sub-microsecond resolution.
         """
-        cleaned = re.sub(r"^(?:Clause|Section|Article|Sec|Art)\s*", "", citation_str.strip(), flags=re.IGNORECASE)
-        cleaned = cleaned.rstrip(".:;")
+        raw_clean = citation_str.strip().rstrip(".:;")
+        lower_clean = raw_clean.lower()
+
+        # 1. Fast O(1) index lookup
+        lookup = getattr(doc, "_lookup", None)
+        if lookup:
+            if lower_clean in lookup:
+                return lookup[lower_clean]
+            num_only = cls.CLEAN_PREFIX_PATTERN.sub("", lower_clean)
+            if num_only in lookup:
+                return lookup[num_only]
+
+        # 2. Linear scan fallback
+        cleaned = cls.CLEAN_PREFIX_PATTERN.sub("", raw_clean).rstrip(".:;")
 
         # Direct match on number
         for clause in doc.clauses:
@@ -37,18 +60,18 @@ class CitationEngine:
         if not snippet or not clause.text:
             return 0.0
 
-        # Exact substring match
-        if snippet.lower() in clause.text.lower():
+        # Exact substring match (fastest path)
+        snippet_lower = snippet.lower()
+        clause_lower = clause.text.lower()
+        if snippet_lower in clause_lower:
             return 1.0
 
         # Word-level overlap score (excluding common stop words for legal precision)
-        stop_words = {"the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by", "as", "is", "was", "are", "were", "be", "been"}
-        snippet_words = {w for w in re.findall(r"\w+", snippet.lower()) if w not in stop_words}
-        clause_words = {w for w in re.findall(r"\w+", clause.text.lower()) if w not in stop_words}
-
+        snippet_words = {w for w in cls.WORD_PATTERN.findall(snippet_lower) if w not in cls.STOP_WORDS}
         if not snippet_words:
             return 0.0
 
+        clause_words = {w for w in cls.WORD_PATTERN.findall(clause_lower) if w not in cls.STOP_WORDS}
         overlap = snippet_words.intersection(clause_words)
         return len(overlap) / len(snippet_words)
 
@@ -60,20 +83,13 @@ class CitationEngine:
         matches: List[CitationMatch] = []
         found_ids = set()
 
-        # Find patterns like [Clause 8.2], (Section 5), Clause 3.1
-        patterns = [
-            re.compile(r"\[(?:Clause|Section)\s+([0-9A-Za-z\.]+)\]", re.IGNORECASE),
-            re.compile(r"\b(?:Clause|Section|Article)\s+([0-9A-Za-z\.]+)\b", re.IGNORECASE),
-            re.compile(r"\bclause_([0-9]+)\b", re.IGNORECASE),
-        ]
-
-        for pattern in patterns:
+        for pattern in cls.CITATION_PATTERNS:
             for m in pattern.finditer(text):
                 num_str = m.group(1)
                 clause = cls.resolve_clause(num_str, doc)
                 if clause and clause.clause_id not in found_ids:
                     found_ids.add(clause.clause_id)
-                    # Extract a representative 100-character snippet
+                    # Extract a representative snippet
                     preview = clause.text[:120].strip() + ("..." if len(clause.text) > 120 else "")
                     matches.append(
                         CitationMatch(

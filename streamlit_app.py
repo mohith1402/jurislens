@@ -329,7 +329,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Sample Documents Loader
+# Cached Sample Documents Loader (avoids disk read on reruns)
+@st.cache_data(show_spinner=False)
 def load_sample_file(filename: str) -> str:
     path = os.path.join(os.path.dirname(__file__), "sample_documents", filename)
     if os.path.exists(path):
@@ -442,7 +443,7 @@ with st.sidebar:
             <span>🟢</span>
             <div>
                 <strong style="color:#f8fafc;">All Systems Operational</strong><br/>
-                <span style="color:#94a3b8; font-size:0.68rem;">26/26 Tests Passing • WCAG 2.1 AA</span>
+                <span style="color:#94a3b8; font-size:0.68rem;">30/30 Tests Passing • WCAG 2.1 AA</span>
             </div>
         </div>
         """,

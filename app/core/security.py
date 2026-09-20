@@ -28,7 +28,10 @@ def sanitize_text_input(text: str, max_length: int = 500000) -> str:
 
     # Clean HTML script tags or event handlers if any exist in text
     cleaned = re.sub(r"<\s*script[^>]*>.*?<\s*/\s*script\s*>", "", cleaned, flags=re.IGNORECASE | re.DOTALL)
+    cleaned = re.sub(r"<\s*(?:iframe|object|embed|applet)[^>]*>.*?<\s*/\s*(?:iframe|object|embed|applet)\s*>", "", cleaned, flags=re.IGNORECASE | re.DOTALL)
     cleaned = re.sub(r"on\w+\s*=\s*['\"][^'\"]*['\"]", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"(?:javascript|vbscript|data):", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"<!--#.*?-->", "", cleaned)  # Block Server-Side Include directives
 
     return cleaned.strip()
 
@@ -65,16 +68,24 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
 
-        # Standard Security Headers
+        # Standard OWASP Top 10 Security Headers
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = "accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=()"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+        response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+        response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
 
-        # Content Security Policy (allowing self, inline CSS/fonts from reputable CDNs)
+        # Content Security Policy (hardened with object-src, base-uri, form-action, and frame-ancestors)
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
+            "object-src 'none'; "
+            "base-uri 'self'; "
+            "form-action 'self'; "
+            "frame-ancestors 'none'; "
             "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
             "font-src 'self' https://fonts.gstatic.com; "

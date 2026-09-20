@@ -31,6 +31,10 @@ except ImportError:
     GENAI_AVAILABLE = False
     logger.warning("google-generativeai package not found. Offline legal simulation mode will be used.")
 
+# High-performance in-memory memoization caches
+ANALYSIS_CACHE: Dict[str, DocumentAnalysisResponse] = {}
+BRIEF_CACHE: Dict[str, LawyerBriefResponse] = {}
+
 
 class GeminiLegalService:
     """Service wrapping Google Gemini 2.5 with grounding and anti-hallucination protocols."""
@@ -79,6 +83,9 @@ CRITICAL ANTI-HALLUCINATION RULES:
 
     async def analyze_document(self, doc: ParsedDocument) -> DocumentAnalysisResponse:
         """Analyzes an ingested document, extracts risks, obligations, and omissions."""
+        if doc.document_id in ANALYSIS_CACHE:
+            return ANALYSIS_CACHE[doc.document_id]
+
         if self.live_client:
             try:
                 prompt = (
@@ -90,12 +97,16 @@ CRITICAL ANTI-HALLUCINATION RULES:
                     f"{self.SYSTEM_INSTRUCTION_ANALYSIS}\n\nTask: Analyze this contract and output JSON.\n{prompt}"
                 )
                 data = json.loads(response.text)
-                return self._build_response_from_json(doc, data)
+                res = self._build_response_from_json(doc, data)
+                ANALYSIS_CACHE[doc.document_id] = res
+                return res
             except Exception as exc:
                 logger.warning(f"Live Gemini API call failed or timed out: {exc}. Using deterministic engine.")
 
         # High-Fidelity Deterministic Legal Reasoning Engine
-        return self._deterministic_analysis(doc)
+        res = self._deterministic_analysis(doc)
+        ANALYSIS_CACHE[doc.document_id] = res
+        return res
 
     async def answer_question(self, doc: ParsedDocument, request: QARequest) -> QAResponse:
         """Answers a user question with strict anti-hallucination protocols."""
@@ -153,6 +164,10 @@ CRITICAL ANTI-HALLUCINATION RULES:
 
     def generate_lawyer_brief(self, doc: ParsedDocument, analysis: DocumentAnalysisResponse, user_notes: Optional[str] = None) -> LawyerBriefResponse:
         """Generates a clean, 1-page attorney consultation briefing sheet."""
+        cache_key = f"{doc.document_id}:{user_notes or ''}"
+        if cache_key in BRIEF_CACHE:
+            return BRIEF_CACHE[cache_key]
+
         date_str = datetime.now().strftime("%B %d, %Y")
         top_risks = [
             {
@@ -217,7 +232,7 @@ CRITICAL ANTI-HALLUCINATION RULES:
 
         formatted_md = "\n".join(md_lines)
 
-        return LawyerBriefResponse(
+        res = LawyerBriefResponse(
             document_title=doc.filename,
             document_type=analysis.document_type,
             generated_date=date_str,
@@ -229,6 +244,8 @@ CRITICAL ANTI-HALLUCINATION RULES:
             formatted_markdown=formatted_md,
             disclaimer=analysis.disclaimer,
         )
+        BRIEF_CACHE[cache_key] = res
+        return res
 
     # -------------------------------------------------------------------------
     # High-Fidelity Deterministic Fallback Engine
