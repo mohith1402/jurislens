@@ -285,6 +285,25 @@ st.markdown(
         font-size: 0.73rem;
         color: #34d399;
     }
+
+    /* Clean Tab Styling to prevent truncation and improve alignment */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0.25rem;
+        background-color: transparent;
+        padding-bottom: 0.15rem;
+    }
+    .stTabs [data-baseweb="tab"] {
+        padding: 0.38rem 0.65rem !important;
+        font-size: 0.82rem !important;
+        font-weight: 600 !important;
+        border-radius: 8px 8px 0 0;
+        white-space: nowrap;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: rgba(56, 189, 248, 0.12) !important;
+        color: #38bdf8 !important;
+        border-bottom: 2px solid #38bdf8 !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -519,7 +538,36 @@ if st.session_state.current_analysis:
             unsafe_allow_html=True,
         )
 
-    st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+
+    # Full-Width Plain-English TL;DR Executive Verdict Card (Spans full width for optimal scaling & alignment)
+    risk_accent = (
+        "#ef4444" if analysis.overall_risk_score >= 75
+        else "#f59e0b" if analysis.overall_risk_score >= 50
+        else "#10b981"
+    )
+    risk_title = (
+        "🚨 CRITICAL RISK: Significant Unilateral Terms Found" if analysis.overall_risk_score >= 75
+        else "⚠️ MODERATE RISK: Several Terms Require Negotiation" if analysis.overall_risk_score >= 50
+        else "✅ LOW RISK: Standard Balanced Agreement"
+    )
+
+    st.markdown(
+        f"""
+        <div class="glass-panel" style="border-left: 4px solid {risk_accent}; margin-bottom: 1.25rem; padding: 1.1rem 1.4rem;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.45rem; flex-wrap:wrap; gap: 0.6rem;">
+                <div style="display:flex; align-items:center; gap: 0.6rem;">
+                    <strong style="color: {risk_accent}; font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em;">{risk_title}</strong>
+                </div>
+                <span class="m3-badge m3-badge-citation" style="font-size: 0.78rem;">💡 Plain-English TL;DR</span>
+            </div>
+            <div style="font-size: 0.92rem; color: #f1f5f9; line-height: 1.6;">
+                {analysis.executive_summary}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     # Split View: Document Viewer (Left) & Intelligence Findings (Right)
     left_col, right_col = st.columns([1, 1], gap="large")
@@ -528,8 +576,8 @@ if st.session_state.current_analysis:
     with left_col:
         st.markdown(
             f"""
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.8rem;">
-                <h3 style="font-size: 1.25rem; font-weight: 700; margin: 0; color:#f8fafc;">📄 Source Clauses: {doc.filename}</h3>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.6rem; min-height: 38px;">
+                <h3 style="font-size: 1.2rem; font-weight: 700; margin: 0; color:#f8fafc;">📄 Source Clauses: {doc.filename}</h3>
                 <span class="m3-badge m3-badge-citation">{len(doc.clauses)} Segments</span>
             </div>
             """,
@@ -587,36 +635,9 @@ if st.session_state.current_analysis:
     with right_col:
         st.markdown(
             """
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.8rem;">
-                <h3 style="font-size: 1.25rem; font-weight: 700; margin: 0; color:#f8fafc;">🛡️ Grounded Legal Intelligence</h3>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.6rem; min-height: 38px;">
+                <h3 style="font-size: 1.2rem; font-weight: 700; margin: 0; color:#f8fafc;">🛡️ Grounded Legal Intelligence</h3>
                 <span class="m3-badge m3-badge-gemini">📍 Exact Citations Grounded</span>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        # Plain-English Executive Verdict Box (Instantly clear for non-lawyers)
-        risk_accent = (
-            "#ef4444" if analysis.overall_risk_score >= 75
-            else "#f59e0b" if analysis.overall_risk_score >= 50
-            else "#10b981"
-        )
-        risk_title = (
-            "🚨 CRITICAL RISK: Significant Unilateral Terms Found" if analysis.overall_risk_score >= 75
-            else "⚠️ MODERATE RISK: Several Terms Require Negotiation" if analysis.overall_risk_score >= 50
-            else "✅ LOW RISK: Standard Balanced Agreement"
-        )
-
-        st.markdown(
-            f"""
-            <div class="glass-panel" style="border-left: 4px solid {risk_accent}; margin-bottom: 1rem; padding: 1rem 1.25rem;">
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.4rem;">
-                    <strong style="color: {risk_accent}; font-size: 0.95rem;">{risk_title}</strong>
-                    <span class="m3-badge m3-badge-citation">Plain English TL;DR</span>
-                </div>
-                <div style="font-size: 0.88rem; color: #f1f5f9; line-height: 1.55;">
-                    {analysis.executive_summary}
-                </div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -624,9 +645,9 @@ if st.session_state.current_analysis:
 
         tab_findings, tab_obligations, tab_missing, tab_brief = st.tabs(
             [
-                f"🔍 Risk Radar ({len(analysis.key_findings)})",
+                f"🔍 Risks ({len(analysis.key_findings)})",
                 f"📋 Obligations ({len(analysis.obligations_checklist)})",
-                f"⚠️ Omissions & Gaps ({len(analysis.missing_protections)})",
+                f"⚠️ Gaps ({len(analysis.missing_protections)})",
                 "📑 Attorney Brief",
             ]
         )
