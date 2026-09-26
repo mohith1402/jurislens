@@ -288,55 +288,96 @@ st.markdown(
         color: #34d399;
     }
 
-    /* JurisLens Boxed & Rounded Segmented Tab Navigation Bar */
-    .stTabs [data-baseweb="tab-list"] {
-        background: rgba(15, 23, 42, 0.75) !important;
+    /* JurisLens Segmented Boxed Tab Navigation Bar */
+    .stTabs [data-baseweb="tab-list"],
+    div[data-testid="stTabs"] [data-baseweb="tab-list"],
+    div[data-testid="stTabs"] div[role="tablist"],
+    div[role="tablist"] {
+        background: rgba(30, 41, 59, 0.65) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 14px !important;
-        padding: 5px 6px !important;
-        gap: 6px !important;
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35) !important;
-        margin-bottom: 1.1rem !important;
+        border-radius: 12px !important;
+        padding: 4px 6px !important;
+        gap: 5px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+        margin-bottom: 0.95rem !important;
         display: flex !important;
         align-items: center !important;
-        backdrop-filter: blur(12px) !important;
+        backdrop-filter: blur(14px) !important;
         overflow-x: auto !important;
         scrollbar-width: none !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        min-height: 44px !important;
+        box-sizing: border-box !important;
     }
-    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar {
+    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar,
+    div[role="tablist"]::-webkit-scrollbar {
         display: none !important;
     }
-    .stTabs [data-baseweb="tab"] {
-        padding: 0.48rem 0.85rem !important;
+    .stTabs [data-baseweb="tab"],
+    div[data-testid="stTabs"] button[role="tab"],
+    div[role="tablist"] button[role="tab"] {
+        padding: 0.45rem 0.85rem !important;
         font-size: 0.82rem !important;
         font-weight: 600 !important;
         white-space: nowrap !important;
+        background: transparent !important;
         background-color: transparent !important;
         border: 1px solid transparent !important;
         outline: none !important;
-        border-radius: 9px !important;
+        border-radius: 8px !important;
         color: #94a3b8 !important;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        transition: all 0.2s ease !important;
         flex-shrink: 0 !important;
+        height: 34px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
     }
-    .stTabs [data-baseweb="tab"]:hover {
+    .stTabs [data-baseweb="tab"]:hover,
+    div[role="tablist"] button[role="tab"]:hover {
         color: #f8fafc !important;
-        background-color: rgba(255, 255, 255, 0.06) !important;
-        border-color: rgba(255, 255, 255, 0.08) !important;
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
     }
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, rgba(56, 189, 248, 0.22) 0%, rgba(99, 102, 241, 0.22) 100%) !important;
+    .stTabs [aria-selected="true"],
+    div[data-testid="stTabs"] button[role="tab"][aria-selected="true"],
+    div[role="tablist"] button[role="tab"][aria-selected="true"] {
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%) !important;
         color: #38bdf8 !important;
-        border: 1px solid rgba(56, 189, 248, 0.45) !important;
-        border-radius: 9px !important;
+        border: 1px solid rgba(56, 189, 248, 0.5) !important;
+        border-radius: 8px !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+        font-weight: 700 !important;
+        height: 34px !important;
     }
-    .stTabs [data-baseweb="tab-highlight"] {
+
+    /* Completely eliminate tab underline indicators and border lines */
+    .stTabs [data-baseweb="tab-highlight"],
+    div[data-baseweb="tab-highlight"],
+    [data-baseweb="tab-highlight"],
+    .stTabs [data-baseweb="tab-border"],
+    div[data-baseweb="tab-border"],
+    [data-baseweb="tab-border"],
+    div[role="tablist"] > div:not([role="tab"]),
+    div[role="tablist"] > div[role="presentation"],
+    div[role="tablist"] > div[aria-hidden="true"],
+    div[role="tablist"] ~ div[role="presentation"] {
         display: none !important;
-    }
-    .stTabs [data-baseweb="tab-border"] {
-        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        max-height: 0 !important;
+        min-height: 0 !important;
+        width: 0 !important;
+        max-width: 0 !important;
+        min-width: 0 !important;
+        line-height: 0 !important;
+        font-size: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        position: absolute !important;
+        pointer-events: none !important;
     }
 
     /* Boxed Container for Chat Console & Interactive Panels */
