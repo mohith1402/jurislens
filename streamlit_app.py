@@ -296,19 +296,21 @@ st.markdown(
         background: rgba(30, 41, 59, 0.65) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 12px !important;
-        padding: 3px !important;
-        gap: 3px !important;
+        padding: 3px 5px !important;
+        gap: 5px !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
         margin-bottom: 0.55rem !important;
         display: flex !important;
         align-items: center !important;
+        justify-content: flex-start !important;
         backdrop-filter: blur(14px) !important;
-        overflow-x: auto !important;
+        overflow: hidden !important;
         scrollbar-width: none !important;
         height: 42px !important;
         min-height: 42px !important;
         max-height: 42px !important;
         box-sizing: border-box !important;
+        width: 100% !important;
     }
     .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar,
     div[role="tablist"]::-webkit-scrollbar {
@@ -317,10 +319,9 @@ st.markdown(
     .stTabs [data-baseweb="tab"],
     div[data-testid="stTabs"] button[role="tab"],
     div[role="tablist"] button[role="tab"] {
-        flex: 1 1 auto !important;
-        min-width: 0 !important;
-        padding: 0 0.55rem !important;
-        font-size: 0.79rem !important;
+        flex: 0 0 auto !important;
+        padding: 0 0.65rem !important;
+        font-size: 0.8rem !important;
         font-weight: 600 !important;
         letter-spacing: -0.01em !important;
         white-space: nowrap !important;
@@ -359,6 +360,7 @@ st.markdown(
         min-height: 34px !important;
         max-height: 34px !important;
         box-sizing: border-box !important;
+        outline: none !important;
     }
     .stTabs [data-baseweb="tab"] p,
     div[role="tablist"] button[role="tab"] p {
@@ -371,36 +373,25 @@ st.markdown(
         color: inherit !important;
     }
 
-    /* Standalone BaseWeb Tab Highlight Suppression (Safari/Chrome/Firefox bulletproof) */
+    /* Completely eliminate BaseWeb tab-highlight indicator and border lines */
+    div[role="tablist"] > div,
+    div[data-baseweb="tab-list"] > div,
+    .stTabs [role="tablist"] > div,
+    .stTabs [data-baseweb="tab-list"] > div,
+    div[data-testid="stTabs"] [role="tablist"] > div,
+    div[data-testid="stTabs"] [data-baseweb="tab-list"] > div,
     [data-baseweb="tab-highlight"],
     .stTabs [data-baseweb="tab-highlight"],
     div[role="tablist"] [data-baseweb="tab-highlight"],
-    div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        height: 0 !important;
-        max-height: 0 !important;
-        min-height: 0 !important;
-        width: 0 !important;
-        max-width: 0 !important;
-        min-width: 0 !important;
-        border: none !important;
-        background: transparent !important;
-        background-color: transparent !important;
-        position: absolute !important;
-        top: -9999px !important;
-        left: -9999px !important;
-        clip-path: inset(100%) !important;
-        transform: scale(0) !important;
-        pointer-events: none !important;
-    }
-
-    /* Standalone BaseWeb Tab Border Line Suppression */
+    div[data-testid="stTabs"] [data-baseweb="tab-highlight"],
     [data-baseweb="tab-border"],
     .stTabs [data-baseweb="tab-border"],
     div[role="tablist"] [data-baseweb="tab-border"],
-    div[data-testid="stTabs"] [data-baseweb="tab-border"] {
+    div[data-testid="stTabs"] [data-baseweb="tab-border"],
+    div[role="tablist"] > div[role="presentation"],
+    div[role="tablist"] > div[aria-hidden="true"],
+    .stTabs [role="presentation"],
+    .stTabs [aria-hidden="true"] {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
@@ -411,6 +402,8 @@ st.markdown(
         max-width: 0 !important;
         min-width: 0 !important;
         border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
         background: transparent !important;
         background-color: transparent !important;
         position: absolute !important;
@@ -421,19 +414,22 @@ st.markdown(
         pointer-events: none !important;
     }
 
-    div[role="tablist"] > div[role="presentation"],
-    div[role="tablist"] > div[aria-hidden="true"] {
+    /* Suppress any pseudo-element underline decorations */
+    .stTabs [data-baseweb="tab"]::after,
+    .stTabs [data-baseweb="tab"]::before,
+    div[role="tablist"] button[role="tab"]::after,
+    div[role="tablist"] button[role="tab"]::before,
+    div[role="tablist"]::after,
+    div[role="tablist"]::before,
+    .stTabs::after,
+    .stTabs::before {
         display: none !important;
-        visibility: hidden !important;
+        content: none !important;
         opacity: 0 !important;
         height: 0 !important;
         width: 0 !important;
         background: transparent !important;
-        background-color: transparent !important;
-        position: absolute !important;
-        top: -9999px !important;
-        left: -9999px !important;
-        pointer-events: none !important;
+        border: none !important;
     }
 
     /* Tab panel flush zero padding to align cards with left column */
