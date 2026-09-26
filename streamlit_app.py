@@ -288,162 +288,117 @@ st.markdown(
         color: #34d399;
     }
 
-    /* JurisLens Segmented Boxed Tab Navigation Bar */
+    /* JurisLens Segmented Boxed Navigation Bar */
+    div[data-testid="stButtonGroup"],
+    div.stButtonGroup {
+        background: rgba(30, 41, 59, 0.65) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        border-radius: 12px !important;
+        padding: 3px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+        margin-bottom: 0.75rem !important;
+        display: flex !important;
+        align-items: center !important;
+        backdrop-filter: blur(14px) !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+    }
+    div[data-testid="stButtonGroup"] > div,
+    div.stButtonGroup > div {
+        display: flex !important;
+        width: 100% !important;
+        gap: 4px !important;
+        align-items: center !important;
+        background: transparent !important;
+    }
+    div[data-testid="stButtonGroup"] button,
+    div.stButtonGroup button {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        border-radius: 9px !important;
+        border: 1px solid transparent !important;
+        background: transparent !important;
+        color: #94a3b8 !important;
+        font-size: 0.77rem !important;
+        font-weight: 600 !important;
+        letter-spacing: -0.01em !important;
+        padding: 0.35rem 0.5rem !important;
+        height: 36px !important;
+        min-height: 36px !important;
+        max-height: 36px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.2s ease !important;
+        white-space: nowrap !important;
+        box-shadow: none !important;
+        outline: none !important;
+        cursor: pointer !important;
+    }
+    div[data-testid="stButtonGroup"] button:hover,
+    div.stButtonGroup button:hover {
+        color: #f8fafc !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        border-color: rgba(255, 255, 255, 0.12) !important;
+    }
+    div[data-testid="stButtonGroup"] button[aria-checked="true"],
+    div.stButtonGroup button[aria-checked="true"] {
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%) !important;
+        color: #38bdf8 !important;
+        border: 1px solid rgba(56, 189, 248, 0.5) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+        font-weight: 700 !important;
+    }
+    div[data-testid="stButtonGroup"] button p,
+    div.stButtonGroup button p,
+    div[data-testid="stButtonGroup"] button span,
+    div.stButtonGroup button span {
+        font-size: inherit !important;
+        font-weight: inherit !important;
+        color: inherit !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+    }
+
+    /* Fallback Clean BaseWeb Tabs Reset (if tabs are ever invoked) */
     .stTabs [data-baseweb="tab-list"],
     div[data-testid="stTabs"] [data-baseweb="tab-list"],
-    div[data-testid="stTabs"] div[role="tablist"],
     div[role="tablist"] {
         background: rgba(30, 41, 59, 0.65) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 12px !important;
         padding: 3px !important;
         gap: 4px !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
         margin-bottom: 0.55rem !important;
         display: flex !important;
         align-items: center !important;
-        backdrop-filter: blur(14px) !important;
-        overflow: hidden !important;
-        scrollbar-width: none !important;
-        height: 42px !important;
-        min-height: 42px !important;
-        max-height: 42px !important;
-        box-sizing: border-box !important;
-        width: 100% !important;
-    }
-    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar,
-    div[role="tablist"]::-webkit-scrollbar {
-        display: none !important;
     }
     .stTabs [data-baseweb="tab"],
-    div[data-testid="stTabs"] button[role="tab"],
-    div[role="tablist"] button[role="tab"],
     div[role="tablist"] [role="tab"] {
-        display: inline-flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        flex: 1 1 0 !important;
-        min-width: 0 !important;
-        padding: 0 0.45rem !important;
-        font-size: 0.78rem !important;
-        font-weight: 600 !important;
-        letter-spacing: -0.01em !important;
-        white-space: nowrap !important;
-        background: transparent !important;
-        background-color: transparent !important;
-        border: 1px solid transparent !important;
-        outline: none !important;
+        flex: 1 1 auto !important;
         border-radius: 9px !important;
         color: #94a3b8 !important;
-        transition: all 0.2s ease !important;
-        height: 34px !important;
-        min-height: 34px !important;
-        max-height: 34px !important;
-        align-items: center !important;
-        justify-content: center !important;
-        box-sizing: border-box !important;
-        margin: 0 !important;
-    }
-    .stTabs [data-baseweb="tab"]:hover,
-    div[role="tablist"] [role="tab"]:hover {
-        color: #f8fafc !important;
-        background-color: rgba(255, 255, 255, 0.08) !important;
-        border-color: rgba(255, 255, 255, 0.1) !important;
+        font-size: 0.77rem !important;
+        border: 1px solid transparent !important;
     }
     .stTabs [aria-selected="true"],
-    div[data-testid="stTabs"] [role="tab"][aria-selected="true"],
     div[role="tablist"] [role="tab"][aria-selected="true"] {
-        display: inline-flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
         background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%) !important;
         color: #38bdf8 !important;
         border: 1px solid rgba(56, 189, 248, 0.5) !important;
-        border-radius: 9px !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
-        font-weight: 700 !important;
-        height: 34px !important;
-        min-height: 34px !important;
-        max-height: 34px !important;
-        box-sizing: border-box !important;
-        outline: none !important;
     }
-    .stTabs [data-baseweb="tab"] *,
-    div[role="tablist"] [role="tab"] * {
-        visibility: visible !important;
-    }
-    .stTabs [data-baseweb="tab"] p,
-    div[role="tablist"] [role="tab"] p {
-        margin: 0 !important;
-        padding: 0 !important;
-        line-height: 1 !important;
-        white-space: nowrap !important;
-        font-size: inherit !important;
-        font-weight: inherit !important;
-        color: inherit !important;
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
-    /* Completely eliminate BaseWeb tab-highlight indicator and border lines */
     [data-baseweb="tab-highlight"],
-    .stTabs [data-baseweb="tab-highlight"],
-    div[role="tablist"] [data-baseweb="tab-highlight"],
-    div[data-testid="stTabs"] [data-baseweb="tab-highlight"],
-    [data-baseweb="tab-border"],
-    .stTabs [data-baseweb="tab-border"],
-    div[role="tablist"] [data-baseweb="tab-border"],
-    div[data-testid="stTabs"] [data-baseweb="tab-border"] {
+    [data-baseweb="tab-border"] {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
         height: 0 !important;
-        max-height: 0 !important;
-        min-height: 0 !important;
-        width: 0 !important;
-        max-width: 0 !important;
-        min-width: 0 !important;
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-        background-color: transparent !important;
-        position: absolute !important;
-        top: -9999px !important;
-        left: -9999px !important;
-        clip-path: inset(100%) !important;
-        transform: scale(0) !important;
-        pointer-events: none !important;
     }
-
-    /* Suppress any pseudo-element underline decorations */
-    .stTabs [data-baseweb="tab"]::after,
-    .stTabs [data-baseweb="tab"]::before,
-    div[role="tablist"] [role="tab"]::after,
-    div[role="tablist"] [role="tab"]::before,
-    div[role="tablist"]::after,
-    div[role="tablist"]::before,
-    .stTabs::after,
-    .stTabs::before {
-        display: none !important;
-        content: none !important;
-        opacity: 0 !important;
-        height: 0 !important;
-        width: 0 !important;
-        background: transparent !important;
-        border: none !important;
-    }
-
-    /* Tab panel flush zero padding to align cards with left column */
     .stTabs [data-baseweb="tab-panel"],
-    div[data-testid="stTabs"] div[data-baseweb="tab-panel"],
-    div[role="tabpanel"],
-    div[data-testid="stTabs"] div[role="tabpanel"] {
-        padding-top: 0 !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        padding-bottom: 0 !important;
+    div[role="tabpanel"] {
+        padding: 0 !important;
         margin-top: 0 !important;
     }
 
@@ -893,18 +848,29 @@ if st.session_state.current_analysis:
             unsafe_allow_html=True,
         )
 
-        tab_chat, tab_findings, tab_obligations, tab_missing, tab_brief = st.tabs(
-            [
-                "💬 Ask AI",
-                f"🔍 Risks ({len(analysis.key_findings)})",
-                f"📋 Obligations ({len(analysis.obligations_checklist)})",
-                f"⚠️ Gaps ({len(analysis.missing_protections)})",
-                "📑 Legal Brief",
-            ]
+        tab_options = [
+            "💬 Ask AI",
+            f"🔍 Risks ({len(analysis.key_findings)})",
+            f"📋 Obligations ({len(analysis.obligations_checklist)})",
+            f"⚠️ Gaps ({len(analysis.missing_protections)})",
+            "📑 Legal Brief",
+        ]
+
+        selected_view = (
+            st.segmented_control(
+                "Grounded Intelligence Navigation",
+                options=tab_options,
+                default="💬 Ask AI",
+                selection_mode="single",
+                label_visibility="collapsed",
+                width="stretch",
+                key="intel_segment_nav",
+            )
+            or "💬 Ask AI"
         )
 
         # Tab 1: Interactive Grounded Q&A Assistant (Zero-Scroll Instant Access)
-        with tab_chat:
+        if selected_view == "💬 Ask AI":
             with st.container(border=True):
                 st.markdown(
                     """
@@ -1001,7 +967,7 @@ if st.session_state.current_analysis:
                         )
 
         # Tab 2: Key Risk Findings (Formatted for non-lawyers)
-        with tab_findings:
+        elif "Risks" in selected_view:
             st.caption("Detailed breakdown of clauses containing significant legal exposure or asymmetric terms:")
             for f in analysis.key_findings:
                 sev_badge = (
@@ -1044,8 +1010,8 @@ if st.session_state.current_analysis:
                     unsafe_allow_html=True,
                 )
 
-        # Tab 2: Obligations Checklist
-        with tab_obligations:
+        # Tab 3: Obligations Checklist
+        elif "Obligations" in selected_view:
             st.caption("Actionable duties, strict notification deadlines, and breach penalties:")
             for o in analysis.obligations_checklist:
                 safe_party = html.escape(str(o.party))
@@ -1073,8 +1039,8 @@ if st.session_state.current_analysis:
                     unsafe_allow_html=True,
                 )
 
-        # Tab 3: Missing Protections & Silences (Hidden Gaps)
-        with tab_missing:
+        # Tab 4: Missing Protections & Silences (Hidden Gaps)
+        elif "Gaps" in selected_view:
             st.markdown(
                 """
                 <div class="glass-panel" style="border-left: 4px solid #f59e0b; padding: 0.85rem 1rem; margin-bottom: 1rem;">
@@ -1113,8 +1079,8 @@ if st.session_state.current_analysis:
                     unsafe_allow_html=True,
                 )
 
-        # Tab 4: Lawyer Consultation Brief
-        with tab_brief:
+        # Tab 5: Lawyer Consultation Brief
+        elif "Legal Brief" in selected_view:
             brief = gemini_service.generate_lawyer_brief(doc, analysis)
             st.markdown("#### 📑 1-Page Attorney Consultation Packet")
             st.caption("Organized briefing to maximize consultation value with your licensed legal counsel.")
