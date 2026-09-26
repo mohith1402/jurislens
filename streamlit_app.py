@@ -297,7 +297,7 @@ st.markdown(
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 12px !important;
         padding: 3px !important;
-        gap: 4px !important;
+        gap: 3px !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
         margin-bottom: 0.55rem !important;
         display: flex !important;
@@ -317,9 +317,12 @@ st.markdown(
     .stTabs [data-baseweb="tab"],
     div[data-testid="stTabs"] button[role="tab"],
     div[role="tablist"] button[role="tab"] {
-        padding: 0 0.85rem !important;
-        font-size: 0.82rem !important;
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        padding: 0 0.55rem !important;
+        font-size: 0.79rem !important;
         font-weight: 600 !important;
+        letter-spacing: -0.01em !important;
         white-space: nowrap !important;
         background: transparent !important;
         background-color: transparent !important;
@@ -328,7 +331,6 @@ st.markdown(
         border-radius: 9px !important;
         color: #94a3b8 !important;
         transition: all 0.2s ease !important;
-        flex-shrink: 0 !important;
         height: 34px !important;
         min-height: 34px !important;
         max-height: 34px !important;
@@ -350,7 +352,6 @@ st.markdown(
         background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%) !important;
         color: #38bdf8 !important;
         border: 1px solid rgba(56, 189, 248, 0.5) !important;
-        border-bottom: 1px solid rgba(56, 189, 248, 0.5) !important;
         border-radius: 9px !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
         font-weight: 700 !important;
@@ -359,18 +360,22 @@ st.markdown(
         max-height: 34px !important;
         box-sizing: border-box !important;
     }
+    .stTabs [data-baseweb="tab"] p,
+    div[role="tablist"] button[role="tab"] p {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        font-size: inherit !important;
+        font-weight: inherit !important;
+        color: inherit !important;
+    }
 
-    /* Completely eliminate tab underline indicators and border lines */
-    .stTabs [data-baseweb="tab-highlight"],
-    div[data-baseweb="tab-highlight"],
+    /* Standalone BaseWeb Tab Highlight Suppression (Safari/Chrome/Firefox bulletproof) */
     [data-baseweb="tab-highlight"],
-    .stTabs [data-baseweb="tab-border"],
-    div[data-baseweb="tab-border"],
-    [data-baseweb="tab-border"],
-    div[role="tablist"] > div:not([role="tab"]),
-    div[role="tablist"] > div[role="presentation"],
-    div[role="tablist"] > div[aria-hidden="true"],
-    div[role="tablist"] ~ div[role="presentation"] {
+    .stTabs [data-baseweb="tab-highlight"],
+    div[role="tablist"] [data-baseweb="tab-highlight"],
+    div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
@@ -380,13 +385,53 @@ st.markdown(
         width: 0 !important;
         max-width: 0 !important;
         min-width: 0 !important;
-        line-height: 0 !important;
-        font-size: 0 !important;
         border: none !important;
         background: transparent !important;
         background-color: transparent !important;
         position: absolute !important;
-        bottom: -9999px !important;
+        top: -9999px !important;
+        left: -9999px !important;
+        clip-path: inset(100%) !important;
+        transform: scale(0) !important;
+        pointer-events: none !important;
+    }
+
+    /* Standalone BaseWeb Tab Border Line Suppression */
+    [data-baseweb="tab-border"],
+    .stTabs [data-baseweb="tab-border"],
+    div[role="tablist"] [data-baseweb="tab-border"],
+    div[data-testid="stTabs"] [data-baseweb="tab-border"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        max-height: 0 !important;
+        min-height: 0 !important;
+        width: 0 !important;
+        max-width: 0 !important;
+        min-width: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        position: absolute !important;
+        top: -9999px !important;
+        left: -9999px !important;
+        clip-path: inset(100%) !important;
+        transform: scale(0) !important;
+        pointer-events: none !important;
+    }
+
+    div[role="tablist"] > div[role="presentation"],
+    div[role="tablist"] > div[aria-hidden="true"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        width: 0 !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        position: absolute !important;
+        top: -9999px !important;
         left: -9999px !important;
         pointer-events: none !important;
     }
@@ -851,11 +896,11 @@ if st.session_state.current_analysis:
 
         tab_chat, tab_findings, tab_obligations, tab_missing, tab_brief = st.tabs(
             [
-                "💬 Ask AI (Chat)",
+                "💬 Ask AI",
                 f"🔍 Risks ({len(analysis.key_findings)})",
                 f"📋 Obligations ({len(analysis.obligations_checklist)})",
                 f"⚠️ Gaps ({len(analysis.missing_protections)})",
-                "📑 Attorney Brief",
+                "📑 Legal Brief",
             ]
         )
 
