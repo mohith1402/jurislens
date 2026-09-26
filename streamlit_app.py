@@ -296,13 +296,12 @@ st.markdown(
         background: rgba(30, 41, 59, 0.65) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 12px !important;
-        padding: 3px 5px !important;
-        gap: 5px !important;
+        padding: 3px !important;
+        gap: 4px !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
         margin-bottom: 0.55rem !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: flex-start !important;
         backdrop-filter: blur(14px) !important;
         overflow: hidden !important;
         scrollbar-width: none !important;
@@ -318,10 +317,15 @@ st.markdown(
     }
     .stTabs [data-baseweb="tab"],
     div[data-testid="stTabs"] button[role="tab"],
-    div[role="tablist"] button[role="tab"] {
-        flex: 0 0 auto !important;
-        padding: 0 0.65rem !important;
-        font-size: 0.8rem !important;
+    div[role="tablist"] button[role="tab"],
+    div[role="tablist"] [role="tab"] {
+        display: inline-flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        padding: 0 0.45rem !important;
+        font-size: 0.78rem !important;
         font-weight: 600 !important;
         letter-spacing: -0.01em !important;
         white-space: nowrap !important;
@@ -335,21 +339,23 @@ st.markdown(
         height: 34px !important;
         min-height: 34px !important;
         max-height: 34px !important;
-        display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
         box-sizing: border-box !important;
         margin: 0 !important;
     }
     .stTabs [data-baseweb="tab"]:hover,
-    div[role="tablist"] button[role="tab"]:hover {
+    div[role="tablist"] [role="tab"]:hover {
         color: #f8fafc !important;
         background-color: rgba(255, 255, 255, 0.08) !important;
         border-color: rgba(255, 255, 255, 0.1) !important;
     }
     .stTabs [aria-selected="true"],
-    div[data-testid="stTabs"] button[role="tab"][aria-selected="true"],
-    div[role="tablist"] button[role="tab"][aria-selected="true"] {
+    div[data-testid="stTabs"] [role="tab"][aria-selected="true"],
+    div[role="tablist"] [role="tab"][aria-selected="true"] {
+        display: inline-flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
         background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%) !important;
         color: #38bdf8 !important;
         border: 1px solid rgba(56, 189, 248, 0.5) !important;
@@ -362,8 +368,12 @@ st.markdown(
         box-sizing: border-box !important;
         outline: none !important;
     }
+    .stTabs [data-baseweb="tab"] *,
+    div[role="tablist"] [role="tab"] * {
+        visibility: visible !important;
+    }
     .stTabs [data-baseweb="tab"] p,
-    div[role="tablist"] button[role="tab"] p {
+    div[role="tablist"] [role="tab"] p {
         margin: 0 !important;
         padding: 0 !important;
         line-height: 1 !important;
@@ -371,15 +381,12 @@ st.markdown(
         font-size: inherit !important;
         font-weight: inherit !important;
         color: inherit !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 
     /* Completely eliminate BaseWeb tab-highlight indicator and border lines */
-    div[role="tablist"] > div,
-    div[data-baseweb="tab-list"] > div,
-    .stTabs [role="tablist"] > div,
-    .stTabs [data-baseweb="tab-list"] > div,
-    div[data-testid="stTabs"] [role="tablist"] > div,
-    div[data-testid="stTabs"] [data-baseweb="tab-list"] > div,
     [data-baseweb="tab-highlight"],
     .stTabs [data-baseweb="tab-highlight"],
     div[role="tablist"] [data-baseweb="tab-highlight"],
@@ -387,11 +394,7 @@ st.markdown(
     [data-baseweb="tab-border"],
     .stTabs [data-baseweb="tab-border"],
     div[role="tablist"] [data-baseweb="tab-border"],
-    div[data-testid="stTabs"] [data-baseweb="tab-border"],
-    div[role="tablist"] > div[role="presentation"],
-    div[role="tablist"] > div[aria-hidden="true"],
-    .stTabs [role="presentation"],
-    .stTabs [aria-hidden="true"] {
+    div[data-testid="stTabs"] [data-baseweb="tab-border"] {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
@@ -417,8 +420,8 @@ st.markdown(
     /* Suppress any pseudo-element underline decorations */
     .stTabs [data-baseweb="tab"]::after,
     .stTabs [data-baseweb="tab"]::before,
-    div[role="tablist"] button[role="tab"]::after,
-    div[role="tablist"] button[role="tab"]::before,
+    div[role="tablist"] [role="tab"]::after,
+    div[role="tablist"] [role="tab"]::before,
     div[role="tablist"]::after,
     div[role="tablist"]::before,
     .stTabs::after,
