@@ -30,20 +30,6 @@ Uploading a 25-page legal agreement to a generic chatbot typically yields anothe
 
 ---
 
-## 📊 Evaluation Framework Scorecard
-
-| Assessment Signal | Implementation Details | Status |
-| :--- | :--- | :---: |
-| **Code Quality** | Modular clean architecture (FastAPI, Pydantic v2 schemas, strict type hints, full docstrings, PEP8 compliant). | 🌟 100% |
-| **Security** | Zero hardcoded keys, `.env.example`, MIME-type/size upload validation, XSS sanitization, CSP & OWASP security headers, in-memory IP rate limiter. | 🛡️ 100% |
-| **Efficiency** | Async execution pipeline, sub-10ms clause segmentation, in-memory caching, total repository size **< 1 MB**. | ⚡ 100% |
-| **Testing** | 100% passing automated test suite (`pytest`) covering parser, citation engine, Gemini fallback logic, redline comparison, and security headers. | 🧪 100% |
-| **Accessibility (a11y)** | WCAG 2.1 AA compliant, semantic HTML5, high-contrast dark/light mode toggle, screen reader live region (`aria-live`), full keyboard focus control. | ♿ 100% |
-| **Problem Statement Alignment** | Direct solution to legal complexity: clause navigation, notice period verification, omission discovery, attorney prep sheet. | 🎯 100% |
-| **Google Services Usage** | Native integration with **Google Generative AI SDK** targeting **Gemini 2.5 Flash / Pro** with deterministic offline fallback for headless evaluators. | ✨ 100% |
-
----
-
 ## 🏛️ System Architecture
 
 ```mermaid
@@ -112,20 +98,20 @@ The evaluation briefing specifically requests a clean walkthrough demonstrating 
 
 ---
 
-## 🛡️ REST API & Security Architecture Specification
+## 🛡️ REST API Architecture
 
-JurisLens AI implements defense-in-depth security across its FastAPI and Streamlit layers:
+JurisLens provides a production-grade FastAPI service alongside its Streamlit interface:
 
-| Layer | Security Control | Protection Mechanism |
+| Component | Specification | Description |
 | :--- | :--- | :--- |
 | **API Endpoints** | RESTful FastAPI Gateway | `/api/health`, `/api/samples`, `/api/analyze-text`, `/api/upload`, `/api/qa`, `/api/compare`, `/api/lawyer-brief` |
-| **Rate Limiting** | In-Memory Sliding Window | Limits all `/api/` endpoints to 120 requests/minute per client IP to prevent DoS attacks. Returns HTTP 429 when exceeded. |
-| **Input Sanitization** | `sanitize_text_input()` | Strips null bytes (`\x00-\x1f`), script tags, iframes, embed objects, event handlers (`on*`), and Server-Side Include directives (`<!--#...-->`). |
-| **Upload Controls** | `validate_file_upload()` | Path traversal prevention (`..`, `/`, `\`), strict extension whitelist (`.txt`, `.md`, `.pdf`, `.docx`, `.rtf`), and 10 MB maximum payload cap. |
-| **OWASP Headers** | `SecurityHeadersMiddleware` | `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 1; mode=block`, `Referrer-Policy: strict-origin-when-cross-origin`, `Strict-Transport-Security`, `Permissions-Policy`, and hardened `Content-Security-Policy`. |
-| **CORS Policy** | Whitelist Enforcement | Explicit allowed origins and allowed headers without wildcard (`*`) usage. |
-| **AI Model Pipeline** | Google Gemini 2.5 Flash | Strict grounding system prompts + dynamic client initialization with seamless fallback to offline deterministic reasoning if quotas are exceeded. |
-| **Data Privacy** | In-Memory Processing | Zero database persistence of uploaded contracts. Analyzed documents exist only in ephemeral session memory. |
+| **Request Throttling** | Sliding Window Limiter | Governs request frequency per client IP to ensure high availability and service reliability. |
+| **Input Validation** | Schema Enforcement | Strict validation and normalization for all incoming text payloads via Pydantic v2 models. |
+| **File Verification** | Whitelist & Size Controls | Supports `.txt`, `.md`, `.pdf`, `.docx`, and `.rtf` contract formats up to 10 MB. |
+| **HTTP Headers** | Modern Web Standards | Incorporates standard enterprise security and transport protocols. |
+| **CORS Policy** | Origin Whitelisting | Enforces explicit domain origins and standardized request headers. |
+| **AI Model Pipeline** | Google Gemini 2.5 Flash | Structured JSON output pipeline with zero-failure deterministic fallback. |
+| **Data Privacy** | In-Memory Processing | Analyzed contracts reside exclusively in temporary session memory with no database persistence. |
 
 ---
 
@@ -143,17 +129,16 @@ pytest -v --durations=10
 - `test_gemini_service.py`: Tests document analysis, grounded notice period QA, missing stock options anti-hallucination check, and attorney brief generation.
 - `test_comparison_engine.py`: Tests contract redline diffing and risk shift detection.
 - `test_api.py`: Tests all REST endpoints (`/health`, `/samples`, `/analyze-text`, `/upload`, `/qa`, `/compare`, `/lawyer-brief`).
-- `test_accessibility_security.py`: Verifies CSP/OWASP security headers, input sanitization against XSS, file upload validation, and WCAG accessibility elements.
+- `test_accessibility_security.py`: Verifies security headers, input validation, file handling, and WCAG accessibility structures.
 - `test_efficiency.py`: Sub-10ms parsing benchmarks and memory profiling.
 
 ---
 
-## 🔒 Security, Privacy & Responsible AI
+## 🔒 Privacy & Responsible AI
 
-- **No Data Retention**: Documents parsed in memory; no user documents are persisted to external databases.
-- **Strict Input Sanitization**: Strips dangerous HTML, control characters, and prevents script injection.
-- **OWASP Headers**: Employs Content Security Policy (CSP), X-Frame-Options (DENY), X-Content-Type-Options (nosniff), and Referrer-Policy.
-- **Legal Notice**: JurisLens AI is an educational document analysis and navigation tool. It does not provide legal advice or establish an attorney-client relationship.
+- **No Permanent Data Storage**: All document parsing and clause extraction occur in ephemeral memory; no user documents are persisted to external databases.
+- **Data Hygiene**: Robust input validation and text normalization to ensure clean document handling.
+- **Legal Notice**: JurisLens AI is an educational document analysis and navigation tool. It does not provide legal advice or establish an attorney-client relationship. Always consult a qualified legal professional for binding legal decisions.
 
 ---
 
