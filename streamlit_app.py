@@ -19,10 +19,6 @@ st.set_page_config(
 
 # Load environment configuration and fallback
 from app.core.config import settings
-from app.models.schemas import QARequest, RiskLevel
-from app.services.comparison_engine import comparison_engine
-from app.services.document_parser import document_parser
-from app.services.gemini_service import gemini_service
 
 # Safely sync Streamlit Secrets to environment
 try:
@@ -31,6 +27,15 @@ try:
         settings.GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 except Exception:
     pass
+
+from app.models.schemas import QARequest, RiskLevel
+from app.services.comparison_engine import comparison_engine
+from app.services.document_parser import document_parser
+from app.services.gemini_service import gemini_service
+
+# Reconfigure gemini_service if secrets were synced
+if settings.has_live_gemini_key and not gemini_service.live_client:
+    gemini_service.reconfigure()
 
 # Material 3 Expressive + Glassmorphism Custom CSS
 st.markdown(
@@ -617,22 +622,6 @@ with st.sidebar:
 
     analyze_clicked = st.button("⚡ Run Grounded Analysis", type="primary", use_container_width=True)
 
-    with st.expander("🔑 Google Gemini 2.5 API Key (Optional)", expanded=False):
-        st.caption("JurisLens AI uses Google Gemini 2.5 Flash. Enter an AI Studio key for live model inference, or leave blank to use the built-in offline legal reasoning engine.")
-        api_input = st.text_input(
-            "Gemini API Key",
-            type="password",
-            value=settings.GEMINI_API_KEY if settings.GEMINI_API_KEY.startswith("AIzaSy") else "",
-            placeholder="AIzaSy...",
-            label_visibility="collapsed",
-            key="sidebar_gemini_api_key",
-        )
-        if api_input and api_input.strip() != settings.GEMINI_API_KEY:
-            if gemini_service.set_api_key(api_input.strip()):
-                st.success("✓ Live Gemini 2.5 Connected!")
-            else:
-                st.info("Using built-in Gemini reasoning engine.")
-
     st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
     st.markdown("<p style='font-size: 0.78rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;'>🛡️ System Architecture & Guardrails</p>", unsafe_allow_html=True)
 
@@ -910,9 +899,6 @@ if st.session_state.current_analysis:
 
         # Tab 1: Interactive Grounded Q&A Assistant (Zero-Scroll Instant Access)
         if selected_view == "💬 Ask AI":
-            if "agent_active_query" not in st.session_state:
-                st.session_state["agent_active_query"] = "What is the required notice period if I resign?"
-
             with st.container(border=True):
                 st.markdown(
                     """
@@ -930,19 +916,20 @@ if st.session_state.current_analysis:
                 )
 
                 q_col1, q_col2, q_col3 = st.columns(3)
-                if q_col1.button("📌 Notice (Cl. 8.2)", use_container_width=True, key="btn_q_notice"):
-                    st.session_state["agent_active_query"] = "What is the required notice period if I resign?"
-                if q_col2.button("🚫 Stock Options", use_container_width=True, key="btn_q_options"):
-                    st.session_state["agent_active_query"] = "What happens to my stock options if I resign?"
-                if q_col3.button("⚖️ Non-Compete (Cl. 9.1)", use_container_width=True, key="btn_q_noncompete"):
-                    st.session_state["agent_active_query"] = "What are the non-compete restrictions?"
+                user_q = ""
+                if q_col1.button("📌 Notice (Cl. 8.2)", use_container_width=True):
+                    user_q = "What is the required notice period if I resign?"
+                if q_col2.button("🚫 Stock Options", use_container_width=True):
+                    user_q = "What happens to my stock options if I resign?"
+                if q_col3.button("⚖️ Non-Compete (Cl. 9.1)", use_container_width=True):
+                    user_q = "What are the non-compete restrictions?"
 
                 st.markdown(
                     """
                     <div style="height: 1px; background: rgba(255, 255, 255, 0.08); margin: 0.85rem 0 0.65rem 0;"></div>
                     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.45rem;">
                         <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8;">
-                            💬 Ask Gemini 2.5 Agent
+                            💬 Custom Contract Question
                         </span>
                         <span style="font-size: 0.72rem; color: #64748b;">Grounded in source clauses</span>
                     </div>
@@ -950,25 +937,16 @@ if st.session_state.current_analysis:
                     unsafe_allow_html=True,
                 )
 
-                input_c1, input_c2 = st.columns([4.2, 1])
-                with input_c1:
-                    typed_q = st.text_input(
-                        "Ask a question about this contract:",
-                        value=st.session_state["agent_active_query"],
-                        placeholder="Ask any question... (e.g. Can the company terminate without cause?)",
-                        label_visibility="collapsed",
-                        key="agent_input_field",
-                    )
-                with input_c2:
-                    ask_btn = st.button("⚡ Ask AI", type="primary", use_container_width=True, key="btn_ask_submit")
+                custom_q = st.text_input(
+                    "Ask a question about this contract:",
+                    value=user_q,
+                    placeholder="Ask any question... (e.g. Can the company terminate without cause?)",
+                    label_visibility="collapsed",
+                )
 
-                if ask_btn or (typed_q and typed_q != st.session_state["agent_active_query"]):
-                    st.session_state["agent_active_query"] = typed_q
-
-            active_q = st.session_state.get("agent_active_query", "").strip()
-            if active_q:
+            if custom_q:
                 with st.spinner("Searching clauses and verifying citations with Gemini 2.5..."):
-                    qa_req = QARequest(document_id=doc.document_id, question=active_q, user_role="employee")
+                    qa_req = QARequest(document_id=doc.document_id, question=custom_q, user_role="employee")
                     qa_res = asyncio.run(gemini_service.answer_question(doc, qa_req))
 
                     # Pre-extract and sanitize Q&A response strings
