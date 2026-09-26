@@ -80,6 +80,32 @@ CRITICAL ANTI-HALLUCINATION RULES:
             self.live_client = None
             logger.info("Operating in deterministic legal reasoning mode (Gemini 2.5 compatible).")
 
+    def set_api_key(self, api_key: str) -> bool:
+        """Dynamically configure or switch Google Gemini API key."""
+        if not api_key or not api_key.strip():
+            self.live_client = None
+            return False
+        try:
+            genai.configure(api_key=api_key.strip())
+            for m_name in [self.model_name, "gemini-1.5-flash"]:
+                try:
+                    self.live_client = genai.GenerativeModel(
+                        model_name=m_name,
+                        generation_config={
+                            "temperature": settings.GEMINI_TEMPERATURE,
+                            "max_output_tokens": settings.GEMINI_MAX_OUTPUT_TOKENS,
+                            "response_mime_type": "application/json",
+                        },
+                    )
+                    logger.info(f"Dynamically configured live Gemini client with model: {m_name}")
+                    return True
+                except Exception:
+                    continue
+        except Exception as exc:
+            logger.warning(f"Failed to dynamically configure live Gemini client: {exc}")
+        self.live_client = None
+        return False
+
     async def analyze_document(self, doc: ParsedDocument) -> DocumentAnalysisResponse:
         """Analyzes an ingested document, extracts risks, obligations, and omissions."""
         if doc.document_id in ANALYSIS_CACHE:

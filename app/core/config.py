@@ -52,7 +52,9 @@ class Settings(BaseSettings):
         if not self.GEMINI_API_KEY:
             return False
         placeholder_values = {"your_gemini_api_key_here", "dummy", "placeholder", "none"}
-        return self.GEMINI_API_KEY.strip().lower() not in placeholder_values
+        if self.GEMINI_API_KEY.strip().lower() in placeholder_values:
+            return False
+        return self.GEMINI_API_KEY.strip().startswith("AIzaSy")
 
 
 # Global singleton settings instance
