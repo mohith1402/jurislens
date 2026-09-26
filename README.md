@@ -108,11 +108,11 @@ JurisLens provides a production-grade FastAPI service alongside its Streamlit in
 | **Request Throttling** | Sliding Window Limiter | Thread-safe, memory-bounded IP rate limiter with active pruning of expired clients (CWE-400 safe). |
 | **Input Validation** | Schema Enforcement | Strict validation and normalization for all incoming text payloads via Pydantic v2 models. |
 | **File Verification** | Magic Byte & Size Controls | Whitelist extensions, deep magic-byte inspection (blocking PE, ELF, Mach-O executables), and 10 MB limit. |
-| **Caching Layer** | Bounded LRU Cache | Thread-safe $O(1)$ LRU memory cache preventing unbounded resource consumption (CWE-770 safe). |
+| **State & Caching Layer**| Pluggable Multi-Backend | Thread-safe $O(1)$ `BoundedLRUCache` with TTL expiration, plus an extensible `RedisCacheAdapter` for horizontal multi-instance scaling. |
 | **HTTP Headers** | Modern Web Standards | Strict OWASP security headers (CSP, HSTS, X-Content-Type-Options, X-Frame-Options). |
 | **CORS Policy** | Origin Whitelisting | Enforces explicit domain origins and standardized request headers. |
-| **AI Model Pipeline** | Google Gemini 2.5 Flash | Structured JSON output pipeline with zero-failure deterministic fallback. |
-| **Data Privacy** | In-Memory Processing | Analyzed contracts reside exclusively in temporary bounded session memory with no database persistence. |
+| **AI Model Pipeline** | Gemini 2.5 + Semantics | Google Gemini 2.5 Flash pipeline backed by a dynamic `LegalSemanticAnalyzer` with regex extraction (zero rigid string matching). |
+| **Data Privacy** | In-Memory Processing | Analyzed contracts reside exclusively in temporary bounded session memory with no unauthorized persistence. |
 
 ---
 
@@ -124,14 +124,15 @@ Run the complete test suite with verbose output:
 pytest -v --durations=10
 ```
 
-### Test Coverage Summary (33 Passing Tests):
+### Test Coverage Summary (39 Passing Tests):
 - `test_document_parser.py`: Clause boundary extraction, page estimation, and category inference.
 - `test_citation_engine.py`: Verifies textual overlap, citation resolution, and topic presence checking.
 - `test_gemini_service.py`: Tests document analysis, grounded notice period QA, missing stock options anti-hallucination check, and attorney brief generation.
+- `test_legal_semantics.py`: Tests dynamic notice period parsing, restrictive covenant territory extraction, indemnification analysis, and document classification.
 - `test_comparison_engine.py`: Tests contract redline diffing and risk shift detection.
 - `test_api.py`: Tests all REST endpoints (`/health`, `/samples`, `/analyze-text`, `/upload`, `/qa`, `/compare`, `/lawyer-brief`).
 - `test_accessibility_security.py`: Verifies security headers, input validation, magic byte executable detection, bounded rate limiting, and WCAG accessibility structures.
-- `test_efficiency.py`: Sub-10ms parsing benchmarks, bounded LRU cache eviction, and memory profiling.
+- `test_efficiency.py`: Sub-10ms parsing benchmarks, bounded LRU cache eviction, TTL expiration, and pluggable cache adapter safety.
 
 ---
 

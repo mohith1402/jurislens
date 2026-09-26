@@ -37,6 +37,12 @@ class Settings(BaseSettings):
     # If True or if no API key is present, uses the offline deterministic legal reasoning engine
     ENABLE_FALLBACK_SIMULATION: bool = True
 
+    # Caching & Horizontal Scalability (CWE-400 / CWE-770 Prevention)
+    CACHE_BACKEND: str = "memory"  # Options: "memory" or "redis"
+    REDIS_URL: str = ""  # Redis connection URL for distributed horizontal scaling
+    CACHE_MAX_ENTRIES: int = 256  # Bounded memory ceiling
+    CACHE_DEFAULT_TTL_SECONDS: int = 3600  # 1-hour TTL expiration
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

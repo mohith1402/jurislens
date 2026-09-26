@@ -20,6 +20,7 @@ from app.models.schemas import (
     CitationMatch,
 )
 from app.services.citation_engine import citation_engine
+from app.services.legal_semantics import legal_analyzer
 
 logger = logging.getLogger("jurislens.gemini")
 
@@ -407,11 +408,10 @@ CRITICAL ANTI-HALLUCINATION RULES:
             text_lower = clause.text.lower()
             title_lower = clause.title.lower()
 
-            # 1. Non-Compete & Restrictive Covenants
-            if any(k in text_lower or k in title_lower for k in ["non-compete", "non-competition", "restraint"]):
-                is_long = any(k in text_lower for k in ["2 years", "two years", "24 months", "3 years"])
-                is_broad = any(k in text_lower for k in ["worldwide", "any territory", "global", "directly or indirectly"])
-                severity = RiskLevel.CRITICAL if (is_long or is_broad) else RiskLevel.HIGH
+            # 1. Non-Compete & Restrictive Covenants (Dynamic Semantic Analysis)
+            if any(k in text_lower or k in title_lower for k in ["non-compete", "non-competition", "restraint", "restrictive"]):
+                cov = legal_analyzer.parse_noncompete(clause.text)
+                severity = cov.severity
                 total_risk_points += 25 if severity == RiskLevel.CRITICAL else 15
 
                 snippet = clause.text[:140] + "..." if len(clause.text) > 140 else clause.text
@@ -421,24 +421,17 @@ CRITICAL ANTI-HALLUCINATION RULES:
                         clause_title=clause.title,
                         clause_number=clause.number,
                         risk_level=severity,
-                        plain_summary="Restricts you from working for competitors or starting a competing venture after departure.",
+                        plain_summary=f"Restricts you from working for competitors or launching a competing venture ({cov.duration_str}).",
                         original_snippet=snippet,
                         potential_risk="Overly broad geographic scope or lengthy duration may prevent legitimate employment in your field.",
                         action_item="Negotiate to limit the duration to 6 months, restrict the geographic boundary, or seek carve-outs for non-competitive roles.",
                     )
                 )
 
-            # 2. Termination & Notice Period
-            if any(k in text_lower or k in title_lower for k in ["termination", "notice period", "days notice"]):
-                has_60_days = "60 days" in text_lower or "sixty (60) days" in text_lower
-                has_at_will = "at-will" in text_lower or "at will" in text_lower
-                has_immediate = "immediate" in text_lower or "without notice" in text_lower
-
-                severity = (
-                    RiskLevel.HIGH
-                    if (has_immediate or (has_at_will and not has_60_days))
-                    else RiskLevel.MEDIUM
-                )
+            # 2. Termination & Notice Period (Dynamic Semantic Analysis)
+            if any(k in text_lower or k in title_lower for k in ["termination", "notice period", "days notice", "resignation"]):
+                notice = legal_analyzer.parse_notice_period(clause.text)
+                severity = notice.severity
                 total_risk_points += 10
 
                 snippet = clause.text[:140] + "..." if len(clause.text) > 140 else clause.text
@@ -448,7 +441,7 @@ CRITICAL ANTI-HALLUCINATION RULES:
                         clause_title=clause.title,
                         clause_number=clause.number,
                         risk_level=severity,
-                        plain_summary="Specifies grounds and required notification timeline for terminating the agreement.",
+                        plain_summary=f"Specifies grounds and required notification timeline ({notice.duration_str}) for terminating the agreement.",
                         original_snippet=snippet,
                         potential_risk="Asymmetric termination rights allow the company to terminate more easily than the individual.",
                         action_item="Ensure mutual notice requirements (e.g. 30 to 60 days) and explicit cure periods for alleged breaches.",
@@ -461,7 +454,7 @@ CRITICAL ANTI-HALLUCINATION RULES:
                         clause_number=clause.number,
                         party="Employee / Contractor",
                         obligation="Provide written notice prior to departure or resigning.",
-                        deadline_or_trigger="60 days prior to effective departure date" if has_60_days else "30 days prior written notice",
+                        deadline_or_trigger=f"{notice.duration_str} prior written notice",
                         consequence="Forfeiture of accrued incentives or liability for transition damages",
                     )
                 )
@@ -486,10 +479,10 @@ CRITICAL ANTI-HALLUCINATION RULES:
                     )
                 )
 
-            # 4. Indemnification & Liability
+            # 4. Indemnification & Liability (Dynamic Semantic Analysis)
             if any(k in text_lower or k in title_lower for k in ["indemnify", "indemnification", "hold harmless"]):
-                is_unilateral = "sole" in text_lower or "employee shall indemnify" in text_lower or "unlimited" in text_lower
-                severity = RiskLevel.CRITICAL if is_unilateral else RiskLevel.HIGH
+                indem = legal_analyzer.parse_indemnity(clause.text)
+                severity = indem.severity
                 total_risk_points += 20
 
                 snippet = clause.text[:140] + "..." if len(clause.text) > 140 else clause.text
@@ -519,16 +512,9 @@ CRITICAL ANTI-HALLUCINATION RULES:
                     )
                 )
 
-        # Detect document type
+        # Detect document type dynamically using weighted legal semantics
+        doc_type = legal_analyzer.classify_document_type(doc.raw_text)
         all_text = doc.raw_text.lower()
-        if "employment" in all_text or "employee" in all_text:
-            doc_type = "Employment Agreement"
-        elif "non-disclosure" in all_text or "confidentiality agreement" in all_text or "nda" in all_text:
-            doc_type = "Non-Disclosure Agreement (NDA)"
-        elif "lease" in all_text or "tenant" in all_text or "landlord" in all_text:
-            doc_type = "Residential / Commercial Lease"
-        elif "service" in all_text or "contractor" in all_text:
-            doc_type = "Master Services Agreement (MSA)"
 
         # Detect Missing Protections / Gaps
         missing_protections: List[MissingClauseAlert] = []
@@ -628,8 +614,8 @@ CRITICAL ANTI-HALLUCINATION RULES:
             if target_clause:
                 clause = target_clause
                 snippet = clause.text[:120].strip() + "..."
-                has_60 = "60 days" in clause.text.lower() or "sixty" in clause.text.lower()
-                notice_len = "60 days" if has_60 else "30 days"
+                notice_analysis = legal_analyzer.parse_notice_period(clause.text)
+                notice_len = notice_analysis.duration_str
                 return QAResponse(
                     question=request.question,
                     answer=(

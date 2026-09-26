@@ -77,3 +77,36 @@ def test_bounded_cache_lru_eviction():
     assert "a" in cache
     assert "c" in cache
     assert "d" in cache
+
+
+def test_bounded_cache_ttl_expiration():
+    """Verify BoundedLRUCache respects TTL and purges expired entries."""
+    from app.core.cache import BoundedLRUCache
+
+    cache: BoundedLRUCache[str, str] = BoundedLRUCache(maxsize=10, default_ttl_seconds=1)
+    cache.set("ephemeral_key", "secret_value", ttl_seconds=1)
+    assert cache.get("ephemeral_key") == "secret_value"
+
+    # Advance time artificially past TTL
+    import time
+    time.sleep(1.05)
+    assert cache.get("ephemeral_key") is None
+    assert "ephemeral_key" not in cache
+    assert len(cache) == 0
+
+
+def test_pluggable_cache_factory_and_adapter():
+    """Verify get_cache_backend factory returns operational cache with fallback safety."""
+    from app.core.cache import get_cache_backend, RedisCacheAdapter
+
+    # Factory returns functional BaseCache
+    cache = get_cache_backend("session_test", maxsize=64, ttl_seconds=120)
+    assert cache is not None
+    cache.set("session_1", {"user": "analyst"})
+    assert cache.get("session_1") == {"user": "analyst"}
+
+    # RedisCacheAdapter gracefully falls back to local LRU if Redis is offline
+    adapter = RedisCacheAdapter(redis_url="redis://localhost:6399/15", default_ttl_seconds=60)
+    adapter.set("test_key", "local_fallback_val")
+    assert adapter.get("test_key") == "local_fallback_val"
+    adapter.clear()
