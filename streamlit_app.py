@@ -296,16 +296,18 @@ st.markdown(
         background: rgba(30, 41, 59, 0.65) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 12px !important;
-        padding: 4px 6px !important;
-        gap: 5px !important;
+        padding: 3px !important;
+        gap: 4px !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-        margin-bottom: 0.95rem !important;
+        margin-bottom: 0.55rem !important;
         display: flex !important;
         align-items: center !important;
         backdrop-filter: blur(14px) !important;
         overflow-x: auto !important;
         scrollbar-width: none !important;
-        min-height: 44px !important;
+        height: 42px !important;
+        min-height: 42px !important;
+        max-height: 42px !important;
         box-sizing: border-box !important;
     }
     .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar,
@@ -315,7 +317,7 @@ st.markdown(
     .stTabs [data-baseweb="tab"],
     div[data-testid="stTabs"] button[role="tab"],
     div[role="tablist"] button[role="tab"] {
-        padding: 0.45rem 0.85rem !important;
+        padding: 0 0.85rem !important;
         font-size: 0.82rem !important;
         font-weight: 600 !important;
         white-space: nowrap !important;
@@ -323,15 +325,18 @@ st.markdown(
         background-color: transparent !important;
         border: 1px solid transparent !important;
         outline: none !important;
-        border-radius: 8px !important;
+        border-radius: 9px !important;
         color: #94a3b8 !important;
         transition: all 0.2s ease !important;
         flex-shrink: 0 !important;
         height: 34px !important;
+        min-height: 34px !important;
+        max-height: 34px !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
         box-sizing: border-box !important;
+        margin: 0 !important;
     }
     .stTabs [data-baseweb="tab"]:hover,
     div[role="tablist"] button[role="tab"]:hover {
@@ -345,10 +350,14 @@ st.markdown(
         background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%) !important;
         color: #38bdf8 !important;
         border: 1px solid rgba(56, 189, 248, 0.5) !important;
-        border-radius: 8px !important;
+        border-bottom: 1px solid rgba(56, 189, 248, 0.5) !important;
+        border-radius: 9px !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
         font-weight: 700 !important;
         height: 34px !important;
+        min-height: 34px !important;
+        max-height: 34px !important;
+        box-sizing: border-box !important;
     }
 
     /* Completely eliminate tab underline indicators and border lines */
@@ -377,7 +386,21 @@ st.markdown(
         background: transparent !important;
         background-color: transparent !important;
         position: absolute !important;
+        bottom: -9999px !important;
+        left: -9999px !important;
         pointer-events: none !important;
+    }
+
+    /* Tab panel flush zero padding to align cards with left column */
+    .stTabs [data-baseweb="tab-panel"],
+    div[data-testid="stTabs"] div[data-baseweb="tab-panel"],
+    div[role="tabpanel"],
+    div[data-testid="stTabs"] div[role="tabpanel"] {
+        padding-top: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        padding-bottom: 0 !important;
+        margin-top: 0 !important;
     }
 
     /* Boxed Container for Chat Console & Interactive Panels */
@@ -385,10 +408,11 @@ st.markdown(
         background: rgba(30, 41, 59, 0.6) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 14px !important;
-        padding: 1.15rem 1.25rem !important;
+        padding: 1.1rem 1.25rem !important;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
         backdrop-filter: blur(14px) !important;
-        margin-bottom: 0.95rem !important;
+        margin-top: 0 !important;
+        margin-bottom: 0.85rem !important;
         transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
     }
     [data-testid="stVerticalBlockBorderWrapper"]:hover {
@@ -439,7 +463,7 @@ st.markdown(
         background: rgba(30, 41, 59, 0.45) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: 12px !important;
-        margin-bottom: 0.55rem !important;
+        margin-bottom: 0.45rem !important;
         transition: all 0.2s ease !important;
         overflow: hidden !important;
     }
@@ -474,7 +498,7 @@ st.markdown(
         color: #38bdf8 !important;
     }
     div[data-testid="stExpander"] details div[data-testid="stExpanderDetails"] {
-        padding: 0.85rem 1rem !important;
+        padding: 0.7rem 0.85rem 0.75rem 0.85rem !important;
         background: rgba(15, 23, 42, 0.25) !important;
     }
     </style>
