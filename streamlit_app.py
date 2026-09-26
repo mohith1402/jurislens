@@ -392,6 +392,50 @@ st.markdown(
     .stTabs div[data-testid="stTextInput"] input::placeholder {
         color: #64748b !important;
     }
+
+    /* JurisLens Clause Expander Alignment & Card Styling */
+    div[data-testid="stExpander"] {
+        background: rgba(30, 41, 59, 0.45) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 12px !important;
+        margin-bottom: 0.55rem !important;
+        transition: all 0.2s ease !important;
+        overflow: hidden !important;
+    }
+    div[data-testid="stExpander"]:hover {
+        border-color: rgba(56, 189, 248, 0.25) !important;
+    }
+    div[data-testid="stExpander"] details {
+        border-radius: 12px !important;
+    }
+    div[data-testid="stExpander"] details summary {
+        padding: 0.65rem 0.95rem !important;
+        font-size: 0.86rem !important;
+        font-weight: 600 !important;
+        color: #f1f5f9 !important;
+        cursor: pointer !important;
+        transition: background 0.2s ease, color 0.2s ease !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    div[data-testid="stExpander"] details summary p {
+        margin: 0 !important;
+        font-size: 0.86rem !important;
+        font-weight: 600 !important;
+    }
+    div[data-testid="stExpander"] details summary:hover {
+        color: #38bdf8 !important;
+        background: rgba(56, 189, 248, 0.04) !important;
+    }
+    div[data-testid="stExpander"] details[open] summary {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background: rgba(15, 23, 42, 0.55) !important;
+        color: #38bdf8 !important;
+    }
+    div[data-testid="stExpander"] details div[data-testid="stExpanderDetails"] {
+        padding: 0.85rem 1rem !important;
+        background: rgba(15, 23, 42, 0.25) !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -697,25 +741,28 @@ if st.session_state.current_analysis:
                 continue
 
             displayed_count += 1
-            clean_title = clause.title if len(clause.title) < 50 else clause.title[:47] + "..."
-            is_open = bool(search_clause) or (filter_cat != "All Categories") or (displayed_count <= 2)
+            clean_num = str(clause.number).rstrip('.')
+            raw_title = clause.title.strip()
+            # Clean redundant leading number in title if repeated
+            if raw_title.startswith(f"{clean_num}.") or raw_title.startswith(f"{clean_num} "):
+                raw_title = raw_title[len(clean_num):].lstrip('. ')
+            clean_title = raw_title if len(raw_title) < 50 else raw_title[:47] + "..."
+            is_open = bool(search_clause) or (filter_cat != "All Categories") or (displayed_count == 1)
 
-            with st.expander(f"Clause {clause.number}: {clean_title}", expanded=is_open):
+            with st.expander(f"Clause {clean_num}: {clean_title}", expanded=is_open):
                 safe_category = html.escape(str(clause.category))
-                st.markdown(
-                    f"""
-                    <div style="display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.6rem; font-size:0.75rem;">
-                        <span class="m3-badge m3-badge-citation">{safe_category}</span>
-                        <span style="color:#94a3b8; padding:0.2rem 0.5rem; background:rgba(255,255,255,0.06); border-radius:6px;">Page {clause.page_number}</span>
-                        <span style="color:#94a3b8; padding:0.2rem 0.5rem; background:rgba(255,255,255,0.06); border-radius:6px;">Lines {clause.line_start}–{clause.line_end}</span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+                safe_page = html.escape(str(clause.page_number))
+                safe_lines = html.escape(f"{clause.line_start}–{clause.line_end}")
                 safe_clause_text = html.escape(str(clause.text))
+
                 st.markdown(
                     f"""
-                    <div style="background:rgba(15,23,42,0.6); border-left:3px solid #6366f1; padding:0.75rem 1rem; border-radius:6px; font-size:0.88rem; line-height:1.6; color:#f1f5f9;">
+                    <div style="display:flex; gap:0.45rem; flex-wrap:wrap; align-items:center; margin-bottom:0.65rem;">
+                        <span class="m3-badge m3-badge-citation" style="font-size:0.74rem; padding:0.2rem 0.65rem;">{safe_category}</span>
+                        <span style="display:inline-flex; align-items:center; padding:0.2rem 0.6rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08); border-radius:9999px; font-size:0.73rem; font-weight:600; color:#94a3b8;">📄 Page {safe_page}</span>
+                        <span style="display:inline-flex; align-items:center; padding:0.2rem 0.6rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08); border-radius:9999px; font-size:0.73rem; font-weight:600; color:#94a3b8;">Lines {safe_lines}</span>
+                    </div>
+                    <div style="background:rgba(15,23,42,0.65); border-left:3px solid #6366f1; padding:0.8rem 1rem; border-radius:8px; font-size:0.88rem; line-height:1.6; color:#f1f5f9; word-break:break-word;">
                         {safe_clause_text}
                     </div>
                     """,
