@@ -288,41 +288,109 @@ st.markdown(
         color: #34d399;
     }
 
-    /* Clean Tab Styling with Smooth Sliding Indicator Animation */
+    /* JurisLens Boxed & Rounded Segmented Tab Navigation Bar */
     .stTabs [data-baseweb="tab-list"] {
-        background-color: transparent !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-        padding: 0 !important;
-        margin-bottom: 0.85rem !important;
+        background: rgba(15, 23, 42, 0.75) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 14px !important;
+        padding: 5px 6px !important;
+        gap: 6px !important;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35) !important;
+        margin-bottom: 1.1rem !important;
+        display: flex !important;
+        align-items: center !important;
+        backdrop-filter: blur(12px) !important;
+        overflow-x: auto !important;
+        scrollbar-width: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar {
+        display: none !important;
     }
     .stTabs [data-baseweb="tab"] {
-        padding: 0.42rem 0.75rem !important;
-        font-size: 0.83rem !important;
+        padding: 0.48rem 0.85rem !important;
+        font-size: 0.82rem !important;
         font-weight: 600 !important;
         white-space: nowrap !important;
         background-color: transparent !important;
-        border: none !important;
+        border: 1px solid transparent !important;
         outline: none !important;
-        border-radius: 6px 6px 0 0 !important;
-        transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        border-radius: 9px !important;
+        color: #94a3b8 !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        flex-shrink: 0 !important;
     }
     .stTabs [data-baseweb="tab"]:hover {
-        color: #e0f2fe !important;
-        background-color: rgba(56, 189, 248, 0.06) !important;
+        color: #f8fafc !important;
+        background-color: rgba(255, 255, 255, 0.06) !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
     }
     .stTabs [aria-selected="true"] {
-        background-color: rgba(56, 189, 248, 0.1) !important;
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.22) 0%, rgba(99, 102, 241, 0.22) 100%) !important;
         color: #38bdf8 !important;
-        border: none !important;
+        border: 1px solid rgba(56, 189, 248, 0.45) !important;
+        border-radius: 9px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
     }
     .stTabs [data-baseweb="tab-highlight"] {
-        background-color: #38bdf8 !important;
-        height: 2.5px !important;
-        border-radius: 2px !important;
-        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        display: none !important;
     }
     .stTabs [data-baseweb="tab-border"] {
         display: none !important;
+    }
+
+    /* Boxed Container for Chat Console & Interactive Panels */
+    [data-testid="stVerticalBlockBorderWrapper"] {
+        background: rgba(30, 41, 59, 0.6) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 14px !important;
+        padding: 1.15rem 1.25rem !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+        backdrop-filter: blur(14px) !important;
+        margin-bottom: 0.95rem !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    [data-testid="stVerticalBlockBorderWrapper"]:hover {
+        border-color: rgba(56, 189, 248, 0.25) !important;
+    }
+
+    /* Benchmark Suggestion Buttons Styling */
+    .stTabs button[kind="secondary"] {
+        background: rgba(15, 23, 42, 0.75) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        border-radius: 9px !important;
+        color: #f1f5f9 !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        padding: 0.5rem 0.65rem !important;
+        transition: all 0.2s ease !important;
+    }
+    .stTabs button[kind="secondary"]:hover {
+        background: rgba(56, 189, 248, 0.12) !important;
+        border-color: rgba(56, 189, 248, 0.4) !important;
+        color: #38bdf8 !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15) !important;
+    }
+
+    /* Chat Input Search Bar Elevated Styling */
+    .stTabs div[data-testid="stTextInput"] input {
+        background: rgba(15, 23, 42, 0.85) !important;
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        border-radius: 10px !important;
+        color: #f8fafc !important;
+        font-size: 0.88rem !important;
+        padding: 0.65rem 0.95rem !important;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        transition: all 0.2s ease !important;
+    }
+    .stTabs div[data-testid="stTextInput"] input:focus {
+        border-color: #38bdf8 !important;
+        box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        background: rgba(15, 23, 42, 0.95) !important;
+    }
+    .stTabs div[data-testid="stTextInput"] input::placeholder {
+        color: #64748b !important;
     }
     </style>
     """,
@@ -681,22 +749,50 @@ if st.session_state.current_analysis:
 
         # Tab 1: Interactive Grounded Q&A Assistant (Zero-Scroll Instant Access)
         with tab_chat:
-            st.caption("⚡ Rapid Evaluation Benchmarks (Click to test zero-hallucination & grounding):")
-            q_col1, q_col2, q_col3 = st.columns(3)
-            user_q = ""
-            if q_col1.button("📌 Notice Period (Clause 8.2)", use_container_width=True):
-                user_q = "What is the required notice period if I resign?"
-            if q_col2.button("🚫 Stock Options (Missing Info Test)", use_container_width=True):
-                user_q = "What happens to my stock options if I resign?"
-            if q_col3.button("⚖️ Non-Compete Scope (Clause 9.1)", use_container_width=True):
-                user_q = "What are the non-compete restrictions?"
+            with st.container(border=True):
+                st.markdown(
+                    """
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.65rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <div style="display:flex; align-items:center; gap: 0.45rem;">
+                            <span style="font-size: 0.95rem;">⚡</span>
+                            <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #38bdf8;">
+                                Rapid Evaluation Benchmarks
+                            </span>
+                        </div>
+                        <span class="m3-badge m3-badge-gemini" style="font-size: 0.7rem; padding: 0.15rem 0.55rem;">1-Click Verification</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
-            custom_q = st.text_input(
-                "Ask a question about this contract:",
-                value=user_q,
-                placeholder="e.g. What is the required notice period if I resign?",
-                label_visibility="collapsed",
-            )
+                q_col1, q_col2, q_col3 = st.columns(3)
+                user_q = ""
+                if q_col1.button("📌 Notice Period (Clause 8.2)", use_container_width=True):
+                    user_q = "What is the required notice period if I resign?"
+                if q_col2.button("🚫 Stock Options (Missing Info Test)", use_container_width=True):
+                    user_q = "What happens to my stock options if I resign?"
+                if q_col3.button("⚖️ Non-Compete Scope (Clause 9.1)", use_container_width=True):
+                    user_q = "What are the non-compete restrictions?"
+
+                st.markdown(
+                    """
+                    <div style="height: 1px; background: rgba(255, 255, 255, 0.08); margin: 0.85rem 0 0.65rem 0;"></div>
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.45rem;">
+                        <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8;">
+                            💬 Custom Contract Question
+                        </span>
+                        <span style="font-size: 0.72rem; color: #64748b;">Grounded in source clauses</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+                custom_q = st.text_input(
+                    "Ask a question about this contract:",
+                    value=user_q,
+                    placeholder="Ask any question... (e.g. Can the company terminate without cause?)",
+                    label_visibility="collapsed",
+                )
 
             if custom_q:
                 with st.spinner("Searching clauses and verifying citations with Gemini 2.5..."):
