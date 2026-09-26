@@ -307,25 +307,27 @@ st.markdown(
     div.stButtonGroup > div {
         display: flex !important;
         width: 100% !important;
-        gap: 4px !important;
+        gap: 3px !important;
         align-items: center !important;
         background: transparent !important;
     }
     div[data-testid="stButtonGroup"] button,
-    div.stButtonGroup button {
+    div.stButtonGroup button,
+    button[data-testid*="segmented_control"],
+    button[data-testid^="stBaseButton-segmented_control"] {
         flex: 1 1 auto !important;
         min-width: 0 !important;
         border-radius: 9px !important;
         border: 1px solid transparent !important;
         background: transparent !important;
         color: #94a3b8 !important;
-        font-size: 0.77rem !important;
+        font-size: 0.68rem !important;
         font-weight: 600 !important;
-        letter-spacing: -0.01em !important;
-        padding: 0.35rem 0.5rem !important;
-        height: 36px !important;
-        min-height: 36px !important;
-        max-height: 36px !important;
+        letter-spacing: -0.02em !important;
+        padding: 2px 4px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        max-height: 34px !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -334,31 +336,52 @@ st.markdown(
         box-shadow: none !important;
         outline: none !important;
         cursor: pointer !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
     }
     div[data-testid="stButtonGroup"] button:hover,
-    div.stButtonGroup button:hover {
+    div.stButtonGroup button:hover,
+    button[data-testid*="segmented_control"]:hover {
         color: #f8fafc !important;
         background: rgba(255, 255, 255, 0.08) !important;
         border-color: rgba(255, 255, 255, 0.12) !important;
     }
     div[data-testid="stButtonGroup"] button[aria-checked="true"],
-    div.stButtonGroup button[aria-checked="true"] {
+    div.stButtonGroup button[aria-checked="true"],
+    button[data-testid*="segmented_controlActive"],
+    button[data-testid^="stBaseButton-segmented_controlActive"] {
         background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%) !important;
         color: #38bdf8 !important;
         border: 1px solid rgba(56, 189, 248, 0.5) !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
         font-weight: 700 !important;
     }
-    div[data-testid="stButtonGroup"] button p,
-    div.stButtonGroup button p,
-    div[data-testid="stButtonGroup"] button span,
-    div.stButtonGroup button span {
-        font-size: inherit !important;
+    div[data-testid="stButtonGroup"] button *,
+    div.stButtonGroup button *,
+    button[data-testid*="segmented_control"] *,
+    button[data-testid*="segmented_control"] div,
+    button[data-testid*="segmented_control"] p,
+    button[data-testid*="segmented_control"] span {
+        font-size: 0.68rem !important;
         font-weight: inherit !important;
         color: inherit !important;
         margin: 0 !important;
         padding: 0 !important;
         line-height: 1 !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+
+    /* Rapid Evaluation Benchmark Buttons Compact Alignment */
+    div[data-testid="stButton"] button {
+        padding: 0.35rem 0.35rem !important;
+        font-size: 0.74rem !important;
+        letter-spacing: -0.01em !important;
+        white-space: nowrap !important;
+    }
+    div[data-testid="stButton"] button p {
+        font-size: 0.74rem !important;
         white-space: nowrap !important;
     }
 
@@ -853,7 +876,7 @@ if st.session_state.current_analysis:
             f"🔍 Risks ({len(analysis.key_findings)})",
             f"📋 Obligations ({len(analysis.obligations_checklist)})",
             f"⚠️ Gaps ({len(analysis.missing_protections)})",
-            "📑 Legal Brief",
+            "📑 Brief",
         ]
 
         selected_view = (
@@ -889,11 +912,11 @@ if st.session_state.current_analysis:
 
                 q_col1, q_col2, q_col3 = st.columns(3)
                 user_q = ""
-                if q_col1.button("📌 Notice Period (Clause 8.2)", use_container_width=True):
+                if q_col1.button("📌 Notice (Cl. 8.2)", use_container_width=True):
                     user_q = "What is the required notice period if I resign?"
-                if q_col2.button("🚫 Stock Options (Missing Info Test)", use_container_width=True):
+                if q_col2.button("🚫 Stock Options", use_container_width=True):
                     user_q = "What happens to my stock options if I resign?"
-                if q_col3.button("⚖️ Non-Compete Scope (Clause 9.1)", use_container_width=True):
+                if q_col3.button("⚖️ Non-Compete (Cl. 9.1)", use_container_width=True):
                     user_q = "What are the non-compete restrictions?"
 
                 st.markdown(
@@ -1080,7 +1103,7 @@ if st.session_state.current_analysis:
                 )
 
         # Tab 5: Lawyer Consultation Brief
-        elif "Legal Brief" in selected_view:
+        elif "Brief" in selected_view:
             brief = gemini_service.generate_lawyer_brief(doc, analysis)
             st.markdown("#### 📑 1-Page Attorney Consultation Packet")
             st.caption("Organized briefing to maximize consultation value with your licensed legal counsel.")
