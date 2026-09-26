@@ -11,6 +11,8 @@ from app.api.routes import router as api_router
 from app.core.config import settings
 from app.core.security import SecurityHeadersMiddleware, rate_limiter
 
+is_dev = settings.ENVIRONMENT.lower() in ("development", "test", "local")
+
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
@@ -19,8 +21,9 @@ app = FastAPI(
         "Provides interactive side-by-side clause verification, anti-hallucination detection, "
         "contract comparison, and lawyer consultation briefing packets."
     ),
-    docs_url="/docs",
-    redoc_url="/redoc",
+    docs_url="/docs" if is_dev else None,
+    redoc_url="/redoc" if is_dev else None,
+    openapi_url="/openapi.json" if is_dev else None,
 )
 
 # Apply GZip Response Compression (Optimizes efficiency and network transfer)
@@ -78,7 +81,13 @@ async def rate_limit_middleware(request: Request, call_next):
     """Enforce basic IP rate limiting for API endpoints."""
     if request.url.path.startswith("/api/"):
         try:
-            client_ip = request.client.host if request.client else "127.0.0.1"
+            forwarded = request.headers.get("X-Forwarded-For")
+            if forwarded:
+                client_ip = forwarded.split(",")[0].strip()
+            elif request.client and request.client.host:
+                client_ip = request.client.host
+            else:
+                client_ip = "127.0.0.1"
         except Exception:
             client_ip = "127.0.0.1"
 

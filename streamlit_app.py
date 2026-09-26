@@ -18,7 +18,7 @@ st.set_page_config(
 )
 
 # Load environment configuration and fallback
-from app.core.config import settings
+from app.core.config import settings  # noqa: E402
 
 # Safely sync Streamlit Secrets to environment
 try:
@@ -28,10 +28,10 @@ try:
 except Exception:
     pass
 
-from app.models.schemas import QARequest, RiskLevel
-from app.services.comparison_engine import comparison_engine
-from app.services.document_parser import document_parser
-from app.services.gemini_service import gemini_service
+from app.models.schemas import QARequest, RiskLevel  # noqa: E402
+from app.services.comparison_engine import comparison_engine  # noqa: E402
+from app.services.document_parser import document_parser  # noqa: E402
+from app.services.gemini_service import gemini_service  # noqa: E402
 
 # Reconfigure gemini_service if secrets were synced
 if settings.has_live_gemini_key and not gemini_service.live_client:
@@ -540,7 +540,7 @@ st.markdown(
         <div>
             <div class="hero-title">⚖️ JurisLens AI</div>
             <div class="hero-subtitle">
-                Grounded Legal Assistance & Document Navigation. Eliminates legal ambiguity with side-by-side clause verification, 
+                Grounded Legal Assistance & Document Navigation. Eliminates legal ambiguity with side-by-side clause verification,
                 zero-hallucination omission detection, and automated attorney briefing packets.
             </div>
         </div>
@@ -553,6 +553,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
 # Cached Sample Documents Loader (avoids disk read on reruns)
 @st.cache_data(show_spinner=False)
 def load_sample_file(filename: str) -> str:
@@ -561,6 +562,7 @@ def load_sample_file(filename: str) -> str:
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
     return ""
+
 
 sample_employment = load_sample_file("employment_agreement_sample.txt")
 sample_standard_nda = load_sample_file("nda_standard_mutual.txt")
@@ -1074,7 +1076,7 @@ if st.session_state.current_analysis:
                 <div class="glass-panel" style="border-left: 4px solid #f59e0b; padding: 0.85rem 1rem; margin-bottom: 1rem;">
                     <strong style="color: #fbbf24; font-size: 0.92rem;">⚡ What's Missing is Often More Dangerous Than What's Present:</strong>
                     <div style="font-size: 0.85rem; color: #cbd5e1; margin-top: 0.25rem; line-height: 1.5;">
-                        Non-lawyers often assume a contract covers everything. In reality, dangerous contracts deliberately omit standard protections. 
+                        Non-lawyers often assume a contract covers everything. In reality, dangerous contracts deliberately omit standard protections.
                         These standard statutory or commercial rights are conspicuously absent:
                     </div>
                 </div>
@@ -1112,7 +1114,7 @@ if st.session_state.current_analysis:
             brief = gemini_service.generate_lawyer_brief(doc, analysis)
             st.markdown("#### 📑 1-Page Attorney Consultation Packet")
             st.caption("Organized briefing to maximize consultation value with your licensed legal counsel.")
-            
+
             d_col1, d_col2 = st.columns([1, 1])
             with d_col1:
                 st.download_button(
@@ -1194,7 +1196,7 @@ st.markdown("---")
 st.markdown(
     """
     <div style="text-align: center; color: #64748b; font-size: 0.8rem; padding: 1rem 0;">
-        ⚖️ <strong>Legal Notice:</strong> JurisLens AI is an educational document analysis and navigation platform powered by Google Gemini 2.5. 
+        ⚖️ <strong>Legal Notice:</strong> JurisLens AI is an educational document analysis and navigation platform powered by Google Gemini 2.5.
         It provides assistive document navigation and does not substitute for professional legal counsel.
     </div>
     """,

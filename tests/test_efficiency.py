@@ -56,3 +56,24 @@ def test_gzip_compression_efficiency(client, sample_employment_text):
     )
     assert res.status_code == 200
     assert res.headers.get("content-encoding") == "gzip"
+
+
+def test_bounded_cache_lru_eviction():
+    """Verify BoundedCache caps entries and performs O(1) LRU eviction."""
+    from app.core.cache import BoundedCache
+
+    cache: BoundedCache[str, int] = BoundedCache(maxsize=3)
+    cache["a"] = 1
+    cache["b"] = 2
+    cache["c"] = 3
+
+    assert len(cache) == 3
+    assert cache["a"] == 1  # Access "a" to mark as recently used
+
+    # Inserting "d" must evict "b" (oldest unaccessed entry)
+    cache["d"] = 4
+    assert len(cache) == 3
+    assert "b" not in cache
+    assert "a" in cache
+    assert "c" in cache
+    assert "d" in cache

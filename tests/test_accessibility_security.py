@@ -27,20 +27,57 @@ def test_sanitize_text_strips_scripts():
 
 
 def test_validate_file_upload_security():
-    """Verify path traversal and disallowed extensions are blocked."""
+    """Verify path traversal, executable masquerading, and null bytes are blocked."""
     # 1. Path traversal attack
     valid, err = validate_file_upload("../../etc/passwd", b"malicious content")
     assert valid is False
     assert "Invalid filename" in err
 
-    # 2. Executable payload
+    # 2. Executable extension
     valid, err = validate_file_upload("exploit.exe", b"binary content")
     assert valid is False
     assert "Unsupported file type" in err
 
-    # 3. Legitimate text file
+    # 3. Executable masquerading (PE / Windows binary disguised as .txt)
+    valid, err = validate_file_upload("contract.txt", b"MZ\x90\x00\x03\x00\x00\x00fake pe executable")
+    assert valid is False
+    assert "Dangerous executable header" in err
+
+    # 4. Executable masquerading (Linux ELF binary disguised as .txt)
+    valid, err = validate_file_upload("contract.txt", b"\x7fELF\x02\x01\x01\x00fake elf")
+    assert valid is False
+    assert "Dangerous executable header" in err
+
+    # 5. Hidden files
+    valid, err = validate_file_upload(".hidden_contract.txt", b"some text")
+    assert valid is False
+    assert "Hidden files" in err
+
+    # 6. Null byte injection in text file
+    valid, err = validate_file_upload("contract.txt", b"Clause 1 text\x00injected null byte")
+    assert valid is False
+    assert "binary content" in err
+
+    # 7. Legitimate text file
     valid, err = validate_file_upload("agreement.txt", b"Safe contract text")
     assert valid is True
+
+
+def test_rate_limiter_memory_bounds_and_pruning():
+    """Verify SimpleRateLimiter enforces RPM, bounded memory table, and pruning."""
+    from app.core.security import SimpleRateLimiter
+
+    limiter = SimpleRateLimiter(requests_per_minute=2, max_tracked_ips=3)
+    assert limiter.check("10.0.0.1") is True
+    assert limiter.check("10.0.0.1") is True
+    # 3rd request from same IP within window is rate-limited
+    assert limiter.check("10.0.0.1") is False
+
+    # Capacity capping: adding multiple new client IPs stays within max_tracked_ips
+    limiter.check("10.0.0.2")
+    limiter.check("10.0.0.3")
+    limiter.check("10.0.0.4")
+    assert len(limiter.clients) <= 3
 
 
 def test_html_accessibility_elements():

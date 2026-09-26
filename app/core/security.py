@@ -35,25 +35,61 @@ def sanitize_text_input(text: str, max_length: int = 500000) -> str:
     return cleaned.strip()
 
 
+EXECUTABLE_MAGIC_HEADERS = [
+    (b"MZ", "Windows PE executable"),
+    (b"\x7fELF", "Linux ELF binary"),
+    (b"\xca\xfe\xba\xbe", "Mach-O universal binary / Java bytecode"),
+    (b"\xce\xfa\xed\xfe", "Mach-O 32-bit binary"),
+    (b"\xcf\xfa\xed\xfe", "Mach-O 64-bit binary"),
+    (b"\xfe\xed\xfa\xce", "Mach-O binary"),
+    (b"\xfe\xed\xfa\xcf", "Mach-O binary"),
+    (b"\x00asm", "WebAssembly binary"),
+]
+
+
 def validate_file_upload(filename: str, file_bytes: bytes) -> Tuple[bool, str]:
     """
-    Validates file extension and byte length.
-    Ensures zero arbitrary execution or path traversal vulnerabilities.
+    Validates file extension, byte length, and file signatures (magic bytes).
+    Prevents path traversal, executable masquerading, and DoS payloads.
     """
     if not filename:
         return False, "Filename cannot be empty."
 
-    # Prevent path traversal
-    if ".." in filename or "/" in filename or "\\" in filename:
+    # Prevent path traversal and hidden files
+    if ".." in filename or "/" in filename or "\\" in filename or "\x00" in filename:
         return False, "Invalid filename detected."
 
-    lower_name = filename.lower()
+    lower_name = filename.lower().strip()
+    if lower_name.startswith("."):
+        return False, "Hidden files are not permitted."
+
     if not any(lower_name.endswith(ext) for ext in settings.ALLOWED_EXTENSIONS):
         return False, f"Unsupported file type. Allowed: {', '.join(settings.ALLOWED_EXTENSIONS)}"
 
     if len(file_bytes) > settings.MAX_UPLOAD_SIZE_BYTES:
         max_mb = settings.MAX_UPLOAD_SIZE_BYTES // (1024 * 1024)
         return False, f"File exceeds maximum allowed size of {max_mb} MB."
+
+    # Detect and block executable binaries masquerading under allowed extensions
+    for magic_prefix, description in EXECUTABLE_MAGIC_HEADERS:
+        if file_bytes.startswith(magic_prefix):
+            return False, f"Dangerous executable header detected ({description}). Upload rejected."
+
+    # Type-specific deep validation
+    if lower_name.endswith((".txt", ".md", ".rtf")):
+        # Pure text formats must not contain binary null bytes (common payload injection vector)
+        if b"\x00" in file_bytes:
+            return False, "Corrupt or binary content detected in text file."
+
+    elif lower_name.endswith(".pdf"):
+        # Standard PDF files must contain the %PDF- magic signature within the first 1024 bytes
+        if b"%PDF-" not in file_bytes[:1024]:
+            return False, "Invalid PDF structure: missing standard PDF header."
+
+    elif lower_name.endswith(".docx"):
+        # DOCX files are zipped XML archives and must begin with the PK zip header
+        if not file_bytes.startswith(b"PK\x03\x04"):
+            return False, "Invalid DOCX structure: missing standard archive header."
 
     return True, "Valid"
 
@@ -97,27 +133,49 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 class SimpleRateLimiter:
     """
-    Lightweight in-memory IP rate limiter for API protection.
+    Thread-safe in-memory IP rate limiter with bounded capacity (CWE-400 safe).
+    Periodically purges inactive clients and evicts when max capacity is reached.
     """
 
-    def __init__(self, requests_per_minute: int = 120):
+    def __init__(self, requests_per_minute: int = 120, max_tracked_ips: int = 2048):
         self.rpm = requests_per_minute
+        self.max_tracked_ips = max_tracked_ips
         self.clients: Dict[str, list] = {}
+        import threading
+        self._lock = threading.Lock()
 
     def check(self, client_ip: str) -> bool:
-        now = time.time()
-        minute_ago = now - 60
+        with self._lock:
+            now = time.time()
+            minute_ago = now - 60
 
-        # Purge old records
-        timestamps = self.clients.get(client_ip, [])
-        timestamps = [t for t in timestamps if t > minute_ago]
+            # Prune current client timestamps
+            timestamps = self.clients.get(client_ip, [])
+            timestamps = [t for t in timestamps if t > minute_ago]
 
-        if len(timestamps) >= self.rpm:
-            return False
+            if len(timestamps) >= self.rpm:
+                self.clients[client_ip] = timestamps
+                return False
 
-        timestamps.append(now)
-        self.clients[client_ip] = timestamps
-        return True
+            # Memory bound check: prune dormant IPs if table is getting full
+            if len(self.clients) >= self.max_tracked_ips:
+                stale_ips = [ip for ip, ts in self.clients.items() if not ts or ts[-1] <= minute_ago]
+                for ip in stale_ips:
+                    del self.clients[ip]
+
+                # If still over capacity, evict oldest entry
+                if len(self.clients) >= self.max_tracked_ips:
+                    oldest_ip = min(self.clients.keys(), key=lambda k: self.clients[k][-1] if self.clients[k] else 0)
+                    del self.clients[oldest_ip]
+
+            timestamps.append(now)
+            self.clients[client_ip] = timestamps
+            return True
+
+    def reset(self) -> None:
+        """Reset rate limiter state (useful for test isolation)."""
+        with self._lock:
+            self.clients.clear()
 
 
 rate_limiter = SimpleRateLimiter()

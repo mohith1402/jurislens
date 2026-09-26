@@ -4,11 +4,12 @@ import hashlib
 import re
 import uuid
 from typing import Dict, List, Optional
+from app.core.cache import BoundedCache
 from app.models.schemas import Clause, ParsedDocument
 
-# In-memory document storage for session-based fast retrieval
-DOCUMENTS_CACHE: Dict[str, ParsedDocument] = {}
-CONTENT_HASH_CACHE: Dict[str, ParsedDocument] = {}
+# Bounded in-memory document storage for session-based fast retrieval (CWE-400 / CWE-770 safe)
+DOCUMENTS_CACHE: BoundedCache[str, ParsedDocument] = BoundedCache(maxsize=128)
+CONTENT_HASH_CACHE: BoundedCache[str, ParsedDocument] = BoundedCache(maxsize=128)
 
 
 class DocumentParser:

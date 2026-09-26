@@ -105,13 +105,14 @@ JurisLens provides a production-grade FastAPI service alongside its Streamlit in
 | Component | Specification | Description |
 | :--- | :--- | :--- |
 | **API Endpoints** | RESTful FastAPI Gateway | `/api/health`, `/api/samples`, `/api/analyze-text`, `/api/upload`, `/api/qa`, `/api/compare`, `/api/lawyer-brief` |
-| **Request Throttling** | Sliding Window Limiter | Governs request frequency per client IP to ensure high availability and service reliability. |
+| **Request Throttling** | Sliding Window Limiter | Thread-safe, memory-bounded IP rate limiter with active pruning of expired clients (CWE-400 safe). |
 | **Input Validation** | Schema Enforcement | Strict validation and normalization for all incoming text payloads via Pydantic v2 models. |
-| **File Verification** | Whitelist & Size Controls | Supports `.txt`, `.md`, `.pdf`, `.docx`, and `.rtf` contract formats up to 10 MB. |
-| **HTTP Headers** | Modern Web Standards | Incorporates standard enterprise security and transport protocols. |
+| **File Verification** | Magic Byte & Size Controls | Whitelist extensions, deep magic-byte inspection (blocking PE, ELF, Mach-O executables), and 10 MB limit. |
+| **Caching Layer** | Bounded LRU Cache | Thread-safe $O(1)$ LRU memory cache preventing unbounded resource consumption (CWE-770 safe). |
+| **HTTP Headers** | Modern Web Standards | Strict OWASP security headers (CSP, HSTS, X-Content-Type-Options, X-Frame-Options). |
 | **CORS Policy** | Origin Whitelisting | Enforces explicit domain origins and standardized request headers. |
 | **AI Model Pipeline** | Google Gemini 2.5 Flash | Structured JSON output pipeline with zero-failure deterministic fallback. |
-| **Data Privacy** | In-Memory Processing | Analyzed contracts reside exclusively in temporary session memory with no database persistence. |
+| **Data Privacy** | In-Memory Processing | Analyzed contracts reside exclusively in temporary bounded session memory with no database persistence. |
 
 ---
 
@@ -123,14 +124,14 @@ Run the complete test suite with verbose output:
 pytest -v --durations=10
 ```
 
-### Test Coverage Summary (31 Passing Tests):
+### Test Coverage Summary (33 Passing Tests):
 - `test_document_parser.py`: Clause boundary extraction, page estimation, and category inference.
 - `test_citation_engine.py`: Verifies textual overlap, citation resolution, and topic presence checking.
 - `test_gemini_service.py`: Tests document analysis, grounded notice period QA, missing stock options anti-hallucination check, and attorney brief generation.
 - `test_comparison_engine.py`: Tests contract redline diffing and risk shift detection.
 - `test_api.py`: Tests all REST endpoints (`/health`, `/samples`, `/analyze-text`, `/upload`, `/qa`, `/compare`, `/lawyer-brief`).
-- `test_accessibility_security.py`: Verifies security headers, input validation, file handling, and WCAG accessibility structures.
-- `test_efficiency.py`: Sub-10ms parsing benchmarks and memory profiling.
+- `test_accessibility_security.py`: Verifies security headers, input validation, magic byte executable detection, bounded rate limiting, and WCAG accessibility structures.
+- `test_efficiency.py`: Sub-10ms parsing benchmarks, bounded LRU cache eviction, and memory profiling.
 
 ---
 

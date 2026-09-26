@@ -42,11 +42,17 @@ def test_topic_presence_and_absence(parsed_employment_doc):
     and correctly flags missing topics (like stock options/equity).
     """
     # 1. Termination is present
-    has_term, term_clauses = citation_engine.check_presence_of_topic(["termination", "notice"], parsed_employment_doc)
+    has_term, term_clauses = citation_engine.check_presence_of_topic(
+        ["termination", "notice"],
+        parsed_employment_doc,
+    )
     assert has_term is True
     assert len(term_clauses) > 0
 
     # 2. Equity/stock option is completely absent from the agreement
-    has_equity, equity_clauses = citation_engine.check_presence_of_topic(["stock option", "esop", "equity vesting"], parsed_employment_doc)
+    has_equity, equity_clauses = citation_engine.check_presence_of_topic(
+        ["stock option", "esop", "equity vesting"],
+        parsed_employment_doc,
+    )
     assert has_equity is False
     assert len(equity_clauses) == 0

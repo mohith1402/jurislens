@@ -2,9 +2,10 @@
 
 import json
 import logging
-from typing import Dict, List, Optional
+from typing import List, Optional
 from datetime import datetime
 
+from app.core.cache import BoundedCache
 from app.core.config import settings
 from app.models.schemas import (
     DocumentAnalysisResponse,
@@ -30,9 +31,9 @@ except ImportError:
     GENAI_AVAILABLE = False
     logger.warning("google-generativeai package not found. Offline legal simulation mode will be used.")
 
-# High-performance in-memory memoization caches
-ANALYSIS_CACHE: Dict[str, DocumentAnalysisResponse] = {}
-BRIEF_CACHE: Dict[str, LawyerBriefResponse] = {}
+# High-performance bounded in-memory memoization caches (CWE-400 / CWE-770 safe)
+ANALYSIS_CACHE: BoundedCache[str, DocumentAnalysisResponse] = BoundedCache(maxsize=128)
+BRIEF_CACHE: BoundedCache[str, LawyerBriefResponse] = BoundedCache(maxsize=128)
 
 
 class GeminiLegalService:

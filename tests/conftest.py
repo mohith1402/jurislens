@@ -1,12 +1,15 @@
 """Pytest fixtures and configuration."""
 
 import os
-os.environ["ENVIRONMENT"] = "test"
 import pytest
 from fastapi.testclient import TestClient
-from app.main import app
-from app.models.schemas import ParsedDocument
-from app.services.document_parser import document_parser
+
+# Ensure test environment mode is active before loading app modules
+os.environ["ENVIRONMENT"] = "test"
+
+from app.main import app  # noqa: E402
+from app.models.schemas import ParsedDocument  # noqa: E402
+from app.services.document_parser import document_parser  # noqa: E402
 
 
 @pytest.fixture
