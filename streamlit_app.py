@@ -582,10 +582,7 @@ if st.session_state.current_analysis:
                 <div style="display:flex; align-items:center; gap: 0.6rem;">
                     <strong style="color: {risk_accent}; font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em;">{risk_title}</strong>
                 </div>
-                <div style="display:flex; align-items:center; gap: 0.6rem;">
-                    <span class="m3-badge m3-badge-citation" style="font-size: 0.78rem;">💡 Plain-English TL;DR</span>
-                    <a href="#grounded-qa" style="color: #38bdf8; text-decoration: none; font-size: 0.76rem; font-weight: 700; background: rgba(56, 189, 248, 0.12); padding: 0.25rem 0.65rem; border-radius: 9999px; border: 1px solid rgba(56, 189, 248, 0.3); display: inline-flex; align-items: center; gap: 0.25rem;">💬 Live Q&A Chatbot ↓</a>
-                </div>
+                <span class="m3-badge m3-badge-citation" style="font-size: 0.78rem;">💡 Plain-English TL;DR</span>
             </div>
             <div style="font-size: 0.92rem; color: #f1f5f9; line-height: 1.6;">
                 {safe_executive_summary}
@@ -622,44 +619,43 @@ if st.session_state.current_analysis:
             search_clause = st.text_input("Search clause text...", placeholder="e.g. notice, non-compete", label_visibility="collapsed")
 
         # Smooth, natural scroll container (Zero black voids)
-        with st.container(height=520):
-            displayed_count = 0
-            for clause in doc.clauses:
-                # Apply category filter
-                if filter_cat != "All Categories" and clause.category != filter_cat:
-                    continue
-                # Apply text search filter
-                if search_clause and (search_clause.lower() not in f"{clause.title} {clause.text}".lower()):
-                    continue
+        displayed_count = 0
+        for clause in doc.clauses:
+            # Apply category filter
+            if filter_cat != "All Categories" and clause.category != filter_cat:
+                continue
+            # Apply text search filter
+            if search_clause and (search_clause.lower() not in f"{clause.title} {clause.text}".lower()):
+                continue
 
-                displayed_count += 1
-                clean_title = clause.title if len(clause.title) < 50 else clause.title[:47] + "..."
-                is_open = bool(search_clause) or (filter_cat != "All Categories") or (displayed_count <= 2)
+            displayed_count += 1
+            clean_title = clause.title if len(clause.title) < 50 else clause.title[:47] + "..."
+            is_open = bool(search_clause) or (filter_cat != "All Categories") or (displayed_count <= 2)
 
-                with st.expander(f"Clause {clause.number}: {clean_title}", expanded=is_open):
-                    safe_category = html.escape(str(clause.category))
-                    st.markdown(
-                        f"""
-                        <div style="display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.6rem; font-size:0.75rem;">
-                            <span class="m3-badge m3-badge-citation">{safe_category}</span>
-                            <span style="color:#94a3b8; padding:0.2rem 0.5rem; background:rgba(255,255,255,0.06); border-radius:6px;">Page {clause.page_number}</span>
-                            <span style="color:#94a3b8; padding:0.2rem 0.5rem; background:rgba(255,255,255,0.06); border-radius:6px;">Lines {clause.line_start}–{clause.line_end}</span>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-                    safe_clause_text = html.escape(str(clause.text))
-                    st.markdown(
-                        f"""
-                        <div style="background:rgba(15,23,42,0.6); border-left:3px solid #6366f1; padding:0.75rem 1rem; border-radius:6px; font-size:0.88rem; line-height:1.6; color:#f1f5f9;">
-                            {safe_clause_text}
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+            with st.expander(f"Clause {clause.number}: {clean_title}", expanded=is_open):
+                safe_category = html.escape(str(clause.category))
+                st.markdown(
+                    f"""
+                    <div style="display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.6rem; font-size:0.75rem;">
+                        <span class="m3-badge m3-badge-citation">{safe_category}</span>
+                        <span style="color:#94a3b8; padding:0.2rem 0.5rem; background:rgba(255,255,255,0.06); border-radius:6px;">Page {clause.page_number}</span>
+                        <span style="color:#94a3b8; padding:0.2rem 0.5rem; background:rgba(255,255,255,0.06); border-radius:6px;">Lines {clause.line_start}–{clause.line_end}</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                safe_clause_text = html.escape(str(clause.text))
+                st.markdown(
+                    f"""
+                    <div style="background:rgba(15,23,42,0.6); border-left:3px solid #6366f1; padding:0.75rem 1rem; border-radius:6px; font-size:0.88rem; line-height:1.6; color:#f1f5f9;">
+                        {safe_clause_text}
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
-            if displayed_count == 0:
-                st.info("No clauses matched your filter or search term.")
+        if displayed_count == 0:
+            st.info("No clauses matched your filter or search term.")
 
     # RIGHT COLUMN: Grounded Legal Intelligence
     with right_col:
@@ -673,8 +669,9 @@ if st.session_state.current_analysis:
             unsafe_allow_html=True,
         )
 
-        tab_findings, tab_obligations, tab_missing, tab_brief = st.tabs(
+        tab_chat, tab_findings, tab_obligations, tab_missing, tab_brief = st.tabs(
             [
+                "💬 Ask AI (Chat)",
                 f"🔍 Risks ({len(analysis.key_findings)})",
                 f"📋 Obligations ({len(analysis.obligations_checklist)})",
                 f"⚠️ Gaps ({len(analysis.missing_protections)})",
@@ -682,7 +679,76 @@ if st.session_state.current_analysis:
             ]
         )
 
-        # Tab 1: Key Risk Findings (Formatted for non-lawyers)
+        # Tab 1: Interactive Grounded Q&A Assistant (Zero-Scroll Instant Access)
+        with tab_chat:
+            st.caption("⚡ Rapid Evaluation Benchmarks (Click to test zero-hallucination & grounding):")
+            q_col1, q_col2, q_col3 = st.columns(3)
+            user_q = ""
+            if q_col1.button("📌 Notice Period (Clause 8.2)", use_container_width=True):
+                user_q = "What is the required notice period if I resign?"
+            if q_col2.button("🚫 Stock Options (Missing Info Test)", use_container_width=True):
+                user_q = "What happens to my stock options if I resign?"
+            if q_col3.button("⚖️ Non-Compete Scope (Clause 9.1)", use_container_width=True):
+                user_q = "What are the non-compete restrictions?"
+
+            custom_q = st.text_input(
+                "Ask a question about this contract:",
+                value=user_q,
+                placeholder="e.g. What is the required notice period if I resign?",
+                label_visibility="collapsed",
+            )
+
+            if custom_q:
+                with st.spinner("Searching clauses and verifying citations with Gemini 2.5..."):
+                    qa_req = QARequest(document_id=doc.document_id, question=custom_q, user_role="employee")
+                    qa_res = asyncio.run(gemini_service.answer_question(doc, qa_req))
+
+                    # Pre-extract and sanitize Q&A response strings
+                    safe_qa_answer = html.escape(str(qa_res.answer))
+                    safe_qa_guidance = html.escape(str(qa_res.verification_guidance))
+                    safe_qa_followup = html.escape(str(qa_res.lawyer_follow_up))
+
+                    if qa_res.is_found_in_document:
+                        st.markdown(
+                            f"""
+                            <div class="glass-panel" style="border-left: 4px solid #10b981; margin-top: 0.6rem;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;">
+                                    <span class="m3-badge m3-badge-low">✓ Grounded in Document ({qa_res.confidence}%)</span>
+                                    <span style="font-size: 0.75rem; color: #94a3b8;">Verified Grounding</span>
+                                </div>
+                                <div style="font-size: 0.95rem; color: #f8fafc; margin-bottom: 0.6rem; font-weight: 500; line-height: 1.55;">
+                                    {safe_qa_answer}
+                                </div>
+                                <div style="font-size: 0.82rem; color: #38bdf8; background: rgba(56, 189, 248, 0.08); padding: 0.5rem; border-radius: 6px;">
+                                    📍 <strong>Verified Coordinates:</strong> {safe_qa_guidance}
+                                </div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
+                    else:
+                        st.markdown(
+                            f"""
+                            <div class="glass-panel" style="border-left: 4px solid #ef4444; margin-top: 0.6rem;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;">
+                                    <span class="m3-badge m3-badge-critical">⚠️ Zero Hallucination: Topic Absent From Document</span>
+                                    <span style="font-size: 0.75rem; color: #f87171;">Strict Guardrail</span>
+                                </div>
+                                <div style="font-size: 0.95rem; color: #f8fafc; margin-bottom: 0.6rem; font-weight: 500; line-height: 1.55;">
+                                    {safe_qa_answer}
+                                </div>
+                                <div style="font-size: 0.82rem; color: #fbbf24; background: rgba(245, 158, 11, 0.1); padding: 0.5rem; border-radius: 6px; margin-bottom: 0.4rem;">
+                                    💡 <strong>Verification Guidance:</strong> {safe_qa_guidance}
+                                </div>
+                                <div style="font-size: 0.82rem; color: #38bdf8; background: rgba(56, 189, 248, 0.08); padding: 0.5rem; border-radius: 6px;">
+                                    ⚖️ <strong>Recommended Inquiry for Counsel:</strong> {safe_qa_followup}
+                                </div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
+
+        # Tab 2: Key Risk Findings (Formatted for non-lawyers)
         with tab_findings:
             st.caption("Detailed breakdown of clauses containing significant legal exposure or asymmetric terms:")
             for f in analysis.key_findings:
@@ -822,93 +888,6 @@ if st.session_state.current_analysis:
                 """,
                 unsafe_allow_html=True,
             )
-
-    # Interactive Grounded Q&A Assistant
-    st.markdown("<div id='grounded-qa' style='height: 18px;'></div>", unsafe_allow_html=True)
-    st.markdown(
-        """
-        <div class="glass-panel" style="margin-bottom: 0.85rem; padding: 1.15rem 1.4rem;">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.35rem; flex-wrap: wrap; gap: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.18rem; font-weight: 700; color: #f8fafc;">💬 Interactive Grounded Q&A Assistant</h3>
-                <span class="m3-badge m3-badge-critical">Strict Anti-Hallucination Active</span>
-            </div>
-            <p style="font-size: 0.84rem; color: #94a3b8; margin: 0; line-height: 1.5;">
-                Ask questions about the contract. If a topic is omitted or undefined, the system explicitly reports that it cannot be determined, protecting you from AI hallucinations.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Fast 1-Click Evaluation Buttons
-    st.caption("⚡ Rapid Evaluation Benchmarks (Click to test zero-hallucination & grounding):")
-    q_col1, q_col2, q_col3 = st.columns(3)
-    user_q = ""
-    if q_col1.button("📌 Notice Period (Clause 8.2)", use_container_width=True):
-        user_q = "What is the required notice period if I resign?"
-    if q_col2.button("🚫 Stock Options (Missing Info Test)", use_container_width=True):
-        user_q = "What happens to my stock options if I resign?"
-    if q_col3.button("⚖️ Non-Compete Scope (Clause 9.1)", use_container_width=True):
-        user_q = "What are the non-compete restrictions?"
-
-    custom_q = st.text_input(
-        "Ask a question about this contract:",
-        value=user_q,
-        placeholder="e.g. What is the required notice period if I resign?",
-        label_visibility="collapsed",
-    )
-
-    if custom_q:
-        with st.spinner("Searching clauses and verifying citations with Gemini 2.5..."):
-            qa_req = QARequest(document_id=doc.document_id, question=custom_q, user_role="employee")
-            qa_res = asyncio.run(gemini_service.answer_question(doc, qa_req))
-
-            # Pre-extract and sanitize Q&A response strings
-            safe_qa_answer = html.escape(str(qa_res.answer))
-            safe_qa_guidance = html.escape(str(qa_res.verification_guidance))
-            safe_qa_followup = html.escape(str(qa_res.lawyer_follow_up))
-
-            if qa_res.is_found_in_document:
-                st.markdown(
-                    f"""
-                    <div class="glass-panel" style="border-left: 4px solid #10b981; margin-top: 0.75rem; padding: 1.1rem 1.35rem;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
-                            <span class="m3-badge m3-badge-low">✓ Grounded in Document ({qa_res.confidence}%)</span>
-                            <span style="font-size: 0.75rem; color: #34d399; font-weight: 600;">Verified Grounding</span>
-                        </div>
-                        <div style="font-size: 0.94rem; color: #f8fafc; margin-bottom: 0.65rem; font-weight: 500; line-height: 1.55;">
-                            {safe_qa_answer}
-                        </div>
-                        <div style="font-size: 0.82rem; color: #38bdf8; background: rgba(56, 189, 248, 0.08); border-left: 2px solid #38bdf8; padding: 0.6rem 0.8rem; border-radius: 6px; line-height: 1.45;">
-                            📍 <strong>Verified Coordinates:</strong> <span style="color:#bae6fd;">{safe_qa_guidance}</span>
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-            else:
-                st.markdown(
-                    f"""
-                    <div class="glass-panel" style="border-left: 4px solid #ef4444; margin-top: 0.75rem; padding: 1.1rem 1.35rem;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
-                            <span class="m3-badge m3-badge-critical">⚠️ Zero Hallucination: Topic Absent From Document</span>
-                            <span style="font-size: 0.75rem; color: #f87171; font-weight: 600;">Strict Guardrail Active</span>
-                        </div>
-                        <div style="font-size: 0.94rem; color: #f8fafc; margin-bottom: 0.65rem; font-weight: 500; line-height: 1.55;">
-                            {safe_qa_answer}
-                        </div>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; font-size: 0.82rem; margin-top: 0.4rem;">
-                            <div style="color: #fbbf24; background: rgba(245, 158, 11, 0.1); border-left: 2px solid #fbbf24; padding: 0.6rem 0.8rem; border-radius: 6px; line-height: 1.45;">
-                                💡 <strong>Verification Guidance:</strong><br/><span style="color:#fde68a;">{safe_qa_guidance}</span>
-                            </div>
-                            <div style="color: #38bdf8; background: rgba(56, 189, 248, 0.08); border-left: 2px solid #38bdf8; padding: 0.6rem 0.8rem; border-radius: 6px; line-height: 1.45;">
-                                ⚖️ <strong>Recommended Inquiry for Counsel:</strong><br/><span style="color:#bae6fd;">{safe_qa_followup}</span>
-                            </div>
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
 
     # Contract Redline Comparison Section
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
